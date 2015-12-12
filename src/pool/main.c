@@ -357,6 +357,7 @@ pool_main_loop(TDS_POOL * pool)
 		}
 
 		/* FIXME check return value */
+		// TODO use poll !!
 		select(sel.maxfd + 1, &sel.rfds, &sel.wfds, NULL, p_tv);
 		if (TDS_UNLIKELY(got_sigterm))
 			break;
