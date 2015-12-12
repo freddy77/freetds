@@ -166,6 +166,8 @@ pool_user_create(TDS_POOL * pool, TDS_SYS_SOCKET s)
 		return NULL;
 	}
 
+	// TODO set no delay, cork, no signal
+
 	puser = pool_user_find_new(pool);
 	if (!puser) {
 		CLOSESOCKET(fd);
@@ -278,6 +280,8 @@ pool_user_login(TDS_POOL * pool, TDS_POOL_USER * puser)
 	while (tds->in_len <= tds->in_pos)
 		if (tds_read_packet(tds) < 0)
 			return false;
+
+	// TODO use tds_alloc_read_login
 
 	tdsdump_log(TDS_DBG_NETWORK, "got packet type %d\n", tds->in_flag);
 	if (tds->in_flag == TDS71_PRELOGIN) {
