@@ -171,6 +171,23 @@ pool_deassign_member(TDS_POOL *pool, TDS_POOL_MEMBER * pmbr)
 	pmbr->sock.poll_send = false;
 }
 
+static const char reset_sql[] =
+	"WHILE @@TRANCOUNT > 0 ROLLBACK\n"
+	"SET TRANSACTION ISOLATION LEVEL READ COMMITTED\n";
+#if 0
+	"WHILE @@TRANCOUNT > 0 ROLLBACK\n"
+
+	"DECLARE @sql NVARCHAR(4000)\n"
+	"WHILE @sql IS NULL OR @sql <> '' BEGIN\n"
+	"SET @sql=''\n"
+	"SELECT TOP 25 @sql=@sql+'DROP ' + CASE xtype WHEN 'U' THEN 'TABLE' WHEN 'P' THEN 'PROC' WHEN 'V' THEN 'VIEW' ELSE 'FUNCTION' END "
+		" + ' [' + REPLACE(name, ']', ']]') + '] ' FROM tempdb..sysobjects "
+		"WHERE name LIKE '#[^#]%' AND OBJECT_ID('tempdb..[' + REPLACE(name,']',']]') + ']') IS NOT NULL "
+			"AND xtype IN ('U', 'P', 'V', 'FN', 'TF')\n"
+	"EXECUTE ( @sql )\n"
+	"END";
+#endif
+
 /*
  * if a dead connection on the client side left this member in a questionable
  * state, let's bring in a correct one
@@ -209,7 +226,7 @@ pool_reset_member(TDS_POOL * pool, TDS_POOL_MEMBER * pmbr)
 		if (tds_set_state(tds, TDS_WRITING) != TDS_WRITING)
 			goto failure;
 		tds_start_query(tds, TDS_QUERY);
-		tds_put_string(tds, "WHILE @@TRANCOUNT > 0 ROLLBACK SET TRANSACTION ISOLATION LEVEL READ COMMITTED", -1);
+		tds_put_string(tds, reset_sql, sizeof(reset_sql)-1);
 		tds_write_packet(tds, 0x9);
 		tds_set_state(tds, TDS_PENDING);
 
