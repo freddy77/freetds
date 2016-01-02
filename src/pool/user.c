@@ -262,6 +262,7 @@ pool_process_users(TDS_POOL * pool, struct pollfd *fds, unsigned num_fds)
 		if (puser->sock.poll_send && (revents & POLLOUT) != 0) {
 			if (!pool_write_data(&puser->assigned_member->sock, &puser->sock))
 				pool_free_member(pool, puser->assigned_member);
+			// TODO flush !!!
 		}
 	}			/* for */
 }
