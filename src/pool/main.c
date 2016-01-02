@@ -63,6 +63,10 @@
 #include <io.h>
 #endif
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #include "pool.h"
 #include <freetds/replacements.h>
 
@@ -276,6 +280,8 @@ pool_open_logfile(TDS_POOL *pool)
 	return true;
 }
 
+static int listen_fd = -1;
+
 static void
 pool_socket_init(TDS_POOL * pool)
 {
@@ -288,20 +294,25 @@ pool_socket_init(TDS_POOL * pool)
 	sin.sin_port = htons(pool->port);
 	sin.sin_family = AF_INET;
 
-	if (TDS_IS_SOCKET_INVALID(s = socket(AF_INET, SOCK_STREAM, 0))) {
-		perror("socket");
-		exit(1);
-	}
-	tds_socket_set_nonblocking(s);
-	/* don't keep addr in use from s.craig@andronics.com */
-	setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (const void *) &socktrue, sizeof(socktrue));
+	if (listen_fd >= 0) {
+		s = listen_fd;
+		listen_fd = -1;
+	} else {
+		if (TDS_IS_SOCKET_INVALID(s = socket(AF_INET, SOCK_STREAM, 0))) {
+			perror("socket");
+			exit(1);
+		}
+		tds_socket_set_nonblocking(s);
+		/* don't keep addr in use from s.craig@andronics.com */
+		setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (const void *) &socktrue, sizeof(socktrue));
 
-	fprintf(stderr, "Listening on port %d\n", pool->port);
-	if (bind(s, (struct sockaddr *) &sin, sizeof(sin)) < 0) {
-		perror("bind");
-		exit(1);
+		fprintf(stderr, "Listening on port %d\n", pool->port);
+		if (bind(s, (struct sockaddr *) &sin, sizeof(sin)) < 0) {
+			perror("bind");
+			exit(1);
+		}
+		listen(s, 5);
 	}
-	listen(s, 5);
 	pool->listen_fd = s;
 
 	if (socketpair(AF_UNIX, SOCK_STREAM, 0, event_pair) < 0) {
@@ -407,6 +418,7 @@ main(int argc, char **argv)
 #else
 #  define DAEMON_OPT ""
 #endif
+	bool xinetd = false;;
 	TDS_POOL *pool;
 	const char *config_path = NULL;
 
@@ -417,7 +429,7 @@ main(int argc, char **argv)
 	signal(SIGPIPE, SIG_IGN);
 #endif
 
-	while ((opt = getopt(argc, argv, "l:c:" DAEMON_OPT)) != -1) {
+	while ((opt = getopt(argc, argv, "l:c:x" DAEMON_OPT)) != -1) {
 		switch (opt) {
 		case 'l':
 			logfile_name = optarg;
@@ -430,6 +442,9 @@ main(int argc, char **argv)
 		case 'c':
 			config_path = optarg;
 			break;
+		case 'x':
+			xinetd = true;
+			break;
 		default:
 			print_usage(argv[0]);
 			return EXIT_FAILURE;
@@ -438,6 +453,21 @@ main(int argc, char **argv)
 	if (optind >= argc) {
 		print_usage(argv[0]);
 		return EXIT_FAILURE;
+	}
+	if (xinetd) {
+		int fd;
+
+		--argc;
+		++argv;
+		listen_fd = dup(0);
+		fd = open("/dev/null", O_RDONLY);
+		dup2(fd, 0);
+		close(fd);
+		fd = open("inet.log", O_WRONLY|O_CREAT|O_APPEND, 0644);
+		dup2(fd, 1);
+		dup2(fd, 2);
+		close(fd);
+		setlinebuf(stdout);
 	}
 	pool = pool_init(argv[optind], config_path);
 #ifdef HAVE_FORK
