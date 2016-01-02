@@ -257,6 +257,7 @@ pool_process_users(TDS_POOL * pool, fd_set * rfds, fd_set * wfds)
 		if (puser->sock.poll_send && FD_ISSET(tds_get_s(puser->sock.tds), wfds)) {
 			if (!pool_write_data(&puser->assigned_member->sock, &puser->sock))
 				pool_free_member(pool, puser->assigned_member);
+			// TODO flush !!!
 		}
 	}			/* for */
 }

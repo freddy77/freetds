@@ -372,6 +372,7 @@ pool_process_members(TDS_POOL * pool, fd_set * rfds, fd_set * wfds)
 				continue;
 			}
 			processed = true;
+			// TODO flush
 		}
 		if (processed)
 			pmbr->last_used_tm = time_now;
