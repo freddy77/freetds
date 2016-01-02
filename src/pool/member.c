@@ -382,6 +382,7 @@ pool_process_members(TDS_POOL * pool, struct pollfd *fds, unsigned num_fds)
 				continue;
 			}
 			processed = true;
+			// TODO flush
 		}
 		if (processed)
 			pmbr->last_used_tm = time_now;
