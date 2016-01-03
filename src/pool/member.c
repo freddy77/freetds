@@ -233,6 +233,7 @@ pool_reset_member(TDS_POOL * pool, TDS_POOL_MEMBER * pmbr)
 		if (TDS_FAILED(tds_process_simple_query(tds)))
 			goto failure;
 	}
+	// TODO assign to a waiting user if possible
 	return;
 
 failure:
