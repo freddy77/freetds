@@ -143,6 +143,7 @@ pool_mbr_login(const TDS_POOL * pool, int tds_version)
 void
 pool_assign_member(TDS_POOL *pool, TDS_POOL_MEMBER * pmbr, TDS_POOL_USER *puser)
 {
+	pool_mbr_check(pool);
 	assert(pmbr->current_user == NULL);
 	if (pmbr->current_user) {
 		pmbr->current_user->assigned_member = NULL;
@@ -152,11 +153,13 @@ pool_assign_member(TDS_POOL *pool, TDS_POOL_MEMBER * pmbr, TDS_POOL_USER *puser)
 	}
 	pmbr->current_user = puser;
 	puser->assigned_member = pmbr;
+	pool_mbr_check(pool);
 }
 
 void
 pool_deassign_member(TDS_POOL *pool, TDS_POOL_MEMBER * pmbr)
 {
+	pool_mbr_check(pool);
 	if (pmbr->current_user) {
 		pmbr->current_user->assigned_member = NULL;
 		pmbr->current_user = NULL;
@@ -164,6 +167,7 @@ pool_deassign_member(TDS_POOL *pool, TDS_POOL_MEMBER * pmbr)
 		dlist_member_append(&pool->idle_members, pmbr);
 	}
 	pmbr->sock.poll_send = false;
+	pool_mbr_check(pool);
 }
 
 static const char reset_sql[] =
@@ -264,6 +268,7 @@ pool_free_member(TDS_POOL * pool, TDS_POOL_MEMBER * pmbr)
 		dlist_member_remove(&pool->active_members, pmbr);
 	}
 	free(pmbr);
+	pool_mbr_check(pool);
 }
 
 void
@@ -276,6 +281,7 @@ pool_mbr_init(TDS_POOL * pool)
 	pool->num_active_members = 0;
 	dlist_member_init(&pool->active_members);
 	dlist_member_init(&pool->idle_members);
+	pool_mbr_check(pool);
 
 	/* open connections for each member */
 	while (pool->num_active_members < pool->min_open_conn) {
@@ -300,6 +306,7 @@ pool_mbr_init(TDS_POOL * pool)
 		}
 		pool->member_logins++;
 	}
+	pool_mbr_check(pool);
 }
 
 void
@@ -367,11 +374,13 @@ pool_process_members(TDS_POOL * pool, fd_set * rfds, fd_set * wfds)
 	time_t time_now;
 	int min_expire_left = -1;
 
+	pool_mbr_check(pool);
 	for (next = dlist_member_first(&pool->active_members); (pmbr = next) != NULL; ) {
 		bool processed = false;
 
 		next = dlist_member_next(&pool->active_members, pmbr);
 
+		assert(pmbr->current_user);
 		if (pmbr->doing_async)
 			continue;
 
@@ -511,6 +520,7 @@ pool_assign_idle_member(TDS_POOL * pool, TDS_POOL_USER *puser)
 	puser->sock.poll_recv = false;
 	puser->sock.poll_send = false;
 
+	pool_mbr_check(pool);
 	DLIST_FOREACH(dlist_member, &pool->idle_members, pmbr) {
 		assert(pmbr->current_user == NULL);
 		assert(!pmbr->doing_async);
@@ -567,8 +577,10 @@ pool_assign_idle_member(TDS_POOL * pool, TDS_POOL_USER *puser)
 	}
 	pmbr->doing_async = true;
 
+	pool_mbr_check(pool);
 	pool->num_active_members++;
 	dlist_member_append(&pool->idle_members, pmbr);
+	pool_mbr_check(pool);
 
 	pool_assign_member(pool, pmbr, puser);
 	puser->sock.poll_send = false;
@@ -576,3 +588,23 @@ pool_assign_idle_member(TDS_POOL * pool, TDS_POOL_USER *puser)
 
 	return pmbr;
 }
+
+#if ENABLE_EXTRA_CHECKS
+void pool_mbr_check(TDS_POOL *pool)
+{
+	TDS_POOL_MEMBER *pmbr;
+	unsigned total = 0;
+
+	DLIST_FOREACH(dlist_member, &pool->active_members, pmbr) {
+		assert(pmbr->doing_async || pmbr->sock.tds);
+		assert(pmbr->current_user);
+		++total;
+	}
+	DLIST_FOREACH(dlist_member, &pool->idle_members, pmbr) {
+		assert(pmbr->doing_async || pmbr->sock.tds);
+		assert(!pmbr->current_user);
+		++total;
+	}
+	assert(pool->num_active_members == total);
+}
+#endif
