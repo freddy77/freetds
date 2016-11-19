@@ -130,7 +130,7 @@ struct parameters_t {
 	, { "@varchar_tds7_out", DBRPCRETURN, SYBVARCHAR,  sizeof(param_data3),   0, (BYTE *) &param_data3 }
 	, { "@nvarchar_tds7_out", DBRPCRETURN, 231,  sizeof(param_data4),   0, (BYTE *) &param_data4 }
 	, { "@nrows",      DBRPCRETURN, SYBINT4,  -1,  -1, (BYTE *) &param_data5 }
-	, { "@c_this_name_is_way_more_than_thirty_characters_charlie",
+	, { "@c_this_name",
 		           0,        SYBVARCHAR,   0,   0, NULL }
 	, { "@nv",         0,        SYBVARCHAR,  -1,   2, (BYTE *) "OK:" }
 	}, *pb = bindings;

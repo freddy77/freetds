@@ -8,7 +8,7 @@ CREATE PROCEDURE #t0022
 , @varchar_tds7_out varchar(8000) OUTPUT
 , @nvarchar_tds7_out nvarchar(4000) OUTPUT
 , @nrows int OUTPUT 
-, @c_this_name_is_way_more_than_thirty_characters_charlie varchar(20)
+, @c_this_name varchar(20)
 , @nv nvarchar(20) = N'hello'
 AS 
 BEGIN 
@@ -18,11 +18,11 @@ if @null_input is not NULL begin
 end else begin
 	print 'Good: @null_input is NULL'
 end
-if @c_this_name_is_way_more_than_thirty_characters_charlie is not NULL begin 
-	select 'error: should be NULL' as status, @c_this_name_is_way_more_than_thirty_characters_charlie as '@c_this_name_is_way_more_than_thirty_characters_charlie'
+if @c_this_name is not NULL begin 
+	select 'error: should be NULL' as status, @c_this_name as '@c_this_name'
 	return -42
 end else begin
-	print 'Good: @c_this_name_is_way_more_than_thirty_characters_charlie is NULL'
+	print 'Good: @c_this_name is NULL'
 end
 select @null_input = max(convert(varchar(30), name)) from systypes 
 select @first_type = min(convert(varchar(30), name)) from systypes 
@@ -37,7 +37,7 @@ select	  @null_input as 'null_input'
 	, @first_type as 'first_type'
 	, @nullout as 'nullout'
 	, @nrows as 'nrows'
-	, @c_this_name_is_way_more_than_thirty_characters_charlie as 'c'
+	, @c_this_name as 'c'
 	, @nv as 'nv'
 	into #parameters
 select * from #parameters
@@ -52,7 +52,7 @@ CREATE PROCEDURE t0022
 , @first_type varchar(30) OUTPUT 
 , @nullout int OUTPUT
 , @nrows int OUTPUT 
-, @c_this_name_is_way_more_than_thirty_characters_charlie varchar(20)
+, @c_this_name varchar(20)
 , @nv nvarchar(20) = N'hello'
 AS 
 BEGIN 
@@ -62,11 +62,11 @@ if @null_input is not NULL begin
 end else begin
 	print 'Good: @null_input is NULL'
 end
-if @c_this_name_is_way_more_than_thirty_characters_charlie is not NULL begin 
-	select 'error: should be NULL' as status, @c_this_name_is_way_more_than_thirty_characters_charlie as '@c_this_name_is_way_more_than_thirty_characters_charlie'
+if @c_this_name is not NULL begin 
+	select 'error: should be NULL' as status, @c_this_name as '@c_this_name'
 	return -42
 end else begin
-	print 'Good: @c_this_name_is_way_more_than_thirty_characters_charlie is NULL'
+	print 'Good: @c_this_name is NULL'
 end
 select @null_input = max(convert(varchar(30), name)) from systypes 
 select @first_type = min(convert(varchar(30), name)) from systypes 
@@ -79,7 +79,7 @@ select	  @null_input as 'null_input'
 	, @first_type as 'first_type'
 	, @nullout as 'nullout'
 	, @nrows as 'nrows'
-	, @c_this_name_is_way_more_than_thirty_characters_charlie as 'c'
+	, @c_this_name as 'c'
 	, @nv as 'nv'
 	into #parameters
 select * from #parameters

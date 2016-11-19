@@ -30,8 +30,8 @@
 #endif
 #endif
 
-#include <sqlfront.h>
-#include <sqldb.h>
+#include <sybfront.h>
+#include <sybdb.h>
 
 #include <freetds/sysdep_private.h>
 
