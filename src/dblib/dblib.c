@@ -1736,6 +1736,7 @@ _dbresults(DBPROCESS * dbproc)
 			case TDS_ROWFMT_RESULT:
 				buffer_free(&dbproc->row_buf);
 				buffer_alloc(dbproc);
+				printf("0-----> state %d done_flags %d\n", dbproc->dbresults_state, done_flags);
 				dbproc->dbresults_state = _DB_RES_RESULTSET_EMPTY;
 				break;
 	
@@ -1763,13 +1764,27 @@ _dbresults(DBPROCESS * dbproc)
 				switch (dbproc->dbresults_state) {
 
 				case _DB_RES_INIT:
-				case _DB_RES_NEXT_RESULT:
+					if (result_type == TDS_DONE_RESULT)
+						printf("1-----> state %d done_flags %d\n", dbproc->dbresults_state, done_flags);
 					dbproc->dbresults_state = _DB_RES_NEXT_RESULT;
 					if (done_flags & TDS_DONE_ERROR)
 						return FAIL;
+//					if (result_type == TDS_DONE_RESULT && (done_flags & TDS_DONE_COUNT) != 0)
 					if (result_type == TDS_DONE_RESULT)
 						return SUCCEED;
 					break;
+
+				case _DB_RES_NEXT_RESULT:
+					if (result_type == TDS_DONE_RESULT)
+						printf("2-----> state %d done_flags %d\n", dbproc->dbresults_state, done_flags);
+					dbproc->dbresults_state = _DB_RES_NEXT_RESULT;
+					if (done_flags & TDS_DONE_ERROR)
+						return FAIL;
+//					if (result_type == TDS_DONE_RESULT && (done_flags & TDS_DONE_COUNT) != 0)
+					if (result_type == TDS_DONE_RESULT)
+						return SUCCEED;
+					break;
+
 
 				case _DB_RES_RESULTSET_EMPTY:
 				case _DB_RES_RESULTSET_ROWS:
@@ -1795,7 +1810,7 @@ _dbresults(DBPROCESS * dbproc)
 				case _DB_RES_RESULTSET_EMPTY :
 				case _DB_RES_RESULTSET_ROWS : 
 					dbproc->dbresults_state = _DB_RES_NEXT_RESULT;
-					return SUCCEED;
+//					return SUCCEED;
 					break;
 				case _DB_RES_NO_MORE_RESULTS:
 				case _DB_RES_SUCCEED:
