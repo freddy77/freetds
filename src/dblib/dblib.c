@@ -1722,7 +1722,10 @@ _dbresults(DBPROCESS * dbproc)
 	}
 
 	for (;;) {
-		TDSRET retcode = tds_process_tokens(tds, &result_type, &done_flags, TDS_TOKEN_RESULTS);
+		unsigned mask = dbproc->dbresults_state == _DB_RES_RESULTSET_EMPTY ?
+			(TDS_TOKEN_RESULTS & ~TDS_RETURN_ROWFMT) | TDS_STOPAT_ROWFMT:
+			TDS_TOKEN_RESULTS;
+		TDSRET retcode = tds_process_tokens(tds, &result_type, &done_flags, mask);
 
 		tdsdump_log(TDS_DBG_FUNC, "dbresults() tds_process_tokens returned %d (%s),\n\t\t\tresult_type %s\n", 
 						retcode, prretcode(retcode, prbuf1), prresult_type(result_type, prbuf2));
@@ -1734,9 +1737,23 @@ _dbresults(DBPROCESS * dbproc)
 			switch (result_type) {
 	
 			case TDS_ROWFMT_RESULT:
+				/* we are in a row, returns the recordset if not done already */
+				switch (dbproc->dbresults_state) {
+				case _DB_RES_RESULTSET_EMPTY:
+					dbproc->dbresults_state = _DB_RES_NEXT_RESULT;
+					return SUCCEED;
+					break;
+				case _DB_RES_RESULTSET_ROWS:
+				case _DB_RES_INIT:  
+				case _DB_RES_NEXT_RESULT: 
+				case _DB_RES_NO_MORE_RESULTS:
+				case _DB_RES_SUCCEED:
+					break;
+				}
+
 				buffer_free(&dbproc->row_buf);
 				buffer_alloc(dbproc);
-				printf("0-----> state %d done_flags %d\n", dbproc->dbresults_state, done_flags);
+				printf("0-----> state %d done_flags %d mask %x\n", dbproc->dbresults_state, done_flags, mask);
 				dbproc->dbresults_state = _DB_RES_RESULTSET_EMPTY;
 				break;
 	
@@ -1809,7 +1826,7 @@ _dbresults(DBPROCESS * dbproc)
 					break;
 				case _DB_RES_RESULTSET_EMPTY :
 				case _DB_RES_RESULTSET_ROWS : 
-					dbproc->dbresults_state = _DB_RES_NEXT_RESULT;
+//					dbproc->dbresults_state = _DB_RES_NEXT_RESULT;
 //					return SUCCEED;
 					break;
 				case _DB_RES_NO_MORE_RESULTS:
