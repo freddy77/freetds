@@ -1586,6 +1586,7 @@ prdbresults_state(int retcode, prbuf_t buf)
 	case _DB_RES_INIT:		return "_DB_RES_INIT";
 	case _DB_RES_RESULTSET_EMPTY:	return "_DB_RES_RESULTSET_EMPTY";
 	case _DB_RES_RESULTSET_ROWS:	return "_DB_RES_RESULTSET_ROWS";
+	case _DB_RES_RESULTSET_ENDED:	return "_DB_RES_RESULTSET_ENDED";
 	case _DB_RES_NEXT_RESULT:	return "_DB_RES_NEXT_RESULT";
 	case _DB_RES_NO_MORE_RESULTS:	return "_DB_RES_NO_MORE_RESULTS";
 	case _DB_RES_SUCCEED:		return "_DB_RES_SUCCEED";
@@ -1685,9 +1686,10 @@ RETCODE
 dbresults(DBPROCESS * dbproc)
 {
 	RETCODE erc = _dbresults(dbproc);
-	prbuf_t buf;
+	prbuf_t prbuf1, prbuf2;
 
-	tdsdump_log(TDS_DBG_FUNC, "dbresults returning %d (%s)\n", erc, prdbretcode(erc, buf));
+	tdsdump_log(TDS_DBG_FUNC, "dbresults returning %d (%s) state %s\n", erc, prdbretcode(erc, prbuf1),
+		    prdbresults_state(dbproc->dbresults_state, prbuf2));
 	return erc;
 }
 
@@ -1696,7 +1698,7 @@ _dbresults(DBPROCESS * dbproc)
 {
 	TDSSOCKET *tds;
 	int result_type = 0, done_flags;
-	prbuf_t prbuf1, prbuf2;
+	prbuf_t prbuf1, prbuf2, prbuf3;
 
 	tdsdump_log(TDS_DBG_FUNC, "dbresults(%p)\n", dbproc);
 	CHECK_CONN(FAIL);
@@ -1722,13 +1724,14 @@ _dbresults(DBPROCESS * dbproc)
 	}
 
 	for (;;) {
-		unsigned mask = dbproc->dbresults_state == _DB_RES_RESULTSET_EMPTY ?
+		unsigned mask = dbproc->dbresults_state == _DB_RES_RESULTSET_EMPTY || dbproc->dbresults_state == _DB_RES_RESULTSET_ROWS ?
 			(TDS_TOKEN_RESULTS & ~TDS_RETURN_ROWFMT) | TDS_STOPAT_ROWFMT:
 			TDS_TOKEN_RESULTS;
 		TDSRET retcode = tds_process_tokens(tds, &result_type, &done_flags, mask);
 
-		tdsdump_log(TDS_DBG_FUNC, "dbresults() tds_process_tokens returned %d (%s),\n\t\t\tresult_type %s\n", 
-						retcode, prretcode(retcode, prbuf1), prresult_type(result_type, prbuf2));
+		tdsdump_log(TDS_DBG_FUNC, "dbresults() tds_process_tokens returned %d (%s),\n\t\t\tresult_type %s done %d state %s\n", 
+						retcode, prretcode(retcode, prbuf1), prresult_type(result_type, prbuf2),
+						done_flags, prdbresults_state(dbproc->dbresults_state, prbuf3));
 
 		switch (retcode) {
 
@@ -1740,10 +1743,11 @@ _dbresults(DBPROCESS * dbproc)
 				/* we are in a row, returns the recordset if not done already */
 				switch (dbproc->dbresults_state) {
 				case _DB_RES_RESULTSET_EMPTY:
+				case _DB_RES_RESULTSET_ROWS:
 					dbproc->dbresults_state = _DB_RES_NEXT_RESULT;
 					return SUCCEED;
 					break;
-				case _DB_RES_RESULTSET_ROWS:
+				case _DB_RES_RESULTSET_ENDED:
 				case _DB_RES_INIT:  
 				case _DB_RES_NEXT_RESULT: 
 				case _DB_RES_NO_MORE_RESULTS:
@@ -1802,6 +1806,11 @@ _dbresults(DBPROCESS * dbproc)
 						return SUCCEED;
 					break;
 
+				case _DB_RES_RESULTSET_ENDED:
+					dbproc->dbresults_state = _DB_RES_NEXT_RESULT;
+					if (done_flags & TDS_DONE_ERROR)
+						return FAIL;
+					break;
 
 				case _DB_RES_RESULTSET_EMPTY:
 				case _DB_RES_RESULTSET_ROWS:
@@ -1826,6 +1835,7 @@ _dbresults(DBPROCESS * dbproc)
 					break;
 				case _DB_RES_RESULTSET_EMPTY :
 				case _DB_RES_RESULTSET_ROWS : 
+				case _DB_RES_RESULTSET_ENDED:
 //					dbproc->dbresults_state = _DB_RES_NEXT_RESULT;
 //					return SUCCEED;
 					break;
@@ -1856,6 +1866,8 @@ _dbresults(DBPROCESS * dbproc)
 			return FAIL;
 			break;
 		}
+		tdsdump_log(TDS_DBG_FUNC, "dbresults() looping state %s\n", 
+					prdbresults_state(dbproc->dbresults_state, prbuf3));
 	}
 }
 
@@ -2164,8 +2176,13 @@ dbnextrow(DBPROCESS * dbproc)
 #endif
 				break;
 			}
+			tdsdump_log(TDS_DBG_FUNC, "YYYYYYYYYYYYYY\n");
+			dbproc->dbresults_state = _DB_RES_RESULTSET_ENDED;
+			result = NO_MORE_ROWS;
+			break;
 		case TDS_NO_MORE_RESULTS:
-			dbproc->dbresults_state = _DB_RES_NEXT_RESULT;
+			tdsdump_log(TDS_DBG_FUNC, "XXXXXXXXXXXXXX\n");
+			dbproc->dbresults_state = _DB_RES_RESULTSET_ENDED;
 			result = NO_MORE_ROWS;
 			break;
 		default:

@@ -182,7 +182,7 @@ main(int argc, char **argv)
 
 	assert(results_retcode == SUCCEED);
 	assert(rowcount == 3);
-	/*assert(colcount == 0); TODO: why does an update get a column? */
+	assert(colcount == 0);
 
 	/*
 	 * SELECT
@@ -252,7 +252,7 @@ main(int argc, char **argv)
 
 	assert(results_retcode == NO_MORE_RESULTS);
 	assert(rowcount == -1);
-	/* assert(colcount == 0); */
+	assert(colcount == 0);
 
 	dbexit();
 
