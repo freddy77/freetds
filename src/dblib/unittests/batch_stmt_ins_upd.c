@@ -8,6 +8,11 @@
 
 static int failed = 0;
 
+#define check_rows(n) do { \
+	expected_rows = n; \
+	assert(rowcount == n); \
+} while(0)
+
 int
 main(int argc, char **argv)
 {
@@ -17,7 +22,7 @@ main(int argc, char **argv)
 	DBINT erc;
 
 	RETCODE ret;
-	int rowcount;
+	int rowcount, expected_rows;
 	int colcount;
 
 	set_malloc_options();
@@ -100,11 +105,12 @@ main(int argc, char **argv)
 
 	/* check the results of the create table statement */
 	assert(ret == SUCCEED);
-	assert(rowcount == -1);
+	check_rows(-1);
 	assert(colcount == 0);
 
 	/* now simulate calling nextRowset() for each remaining statement in our batch */
 
+#if 1
 	/*
 	 * INSERT
 	 */
@@ -120,9 +126,11 @@ main(int argc, char **argv)
 	printf("COLCOUNT: %d\n\n", colcount);
 
 	assert(ret == SUCCEED);
-	assert(rowcount == 3);
+	check_rows(3);
 	assert(colcount == 0);
+#endif
 
+#if 1
 	/*
 	 * UPDATE
 	 */
@@ -138,9 +146,11 @@ main(int argc, char **argv)
 	printf("COLCOUNT: %d\n\n", colcount);
 
 	assert(ret == SUCCEED);
-	assert(rowcount == 3);
+	check_rows(3);
 	assert(colcount == 0);
+#endif
 
+#if 1
 	/*
 	 * INSERT
 	 */
@@ -156,9 +166,11 @@ main(int argc, char **argv)
 	printf("COLCOUNT: %d\n\n", colcount);
 
 	assert(ret == SUCCEED);
-	assert(rowcount == 1);
+	check_rows(1);
 	assert(colcount == 0);
+#endif
 
+#if 1
 	/*
 	 * DROP
 	 */
@@ -174,8 +186,9 @@ main(int argc, char **argv)
 	printf("COLCOUNT: %d\n\n", colcount);
 
 	assert(ret == SUCCEED);
-	assert(rowcount == -1);
+	check_rows(-1);
 	assert(colcount == 0);
+#endif
 
 	/* Call one more time to be sure we get NO_MORE_RESULTS */
 	ret = dbnextrow(dbproc);
@@ -190,7 +203,7 @@ main(int argc, char **argv)
 	printf("COLCOUNT: %d\n\n", colcount);
 
 	assert(ret == NO_MORE_RESULTS);
-	assert(rowcount == -1);
+	check_rows(expected_rows);
 	assert(colcount == 0);
 
 	dbexit();
