@@ -295,6 +295,13 @@ main(int argc, char **argv)
 	DO_TEST(CS_CHAR test[] = "abcdef";
 		CS_CHAR test2[] = "616263", CS_BINARY_TYPE, test, 6, CS_CHAR_TYPE, 6, CS_FAIL, test2, 6);
 
+	DO_TEST(CS_CHAR test[] = "abc";
+		CS_CHAR test2[] = "a\0b\0c\0", CS_CHAR_TYPE, test, 3, CS_UNITEXT_TYPE, 8, CS_SUCCEED, test2, 6);
+	DO_TEST(CS_CHAR test[] = "a\0b\0c\0";
+		CS_CHAR test2[] = "abc", CS_UNITEXT_TYPE, test, 6, CS_CHAR_TYPE, 4, CS_SUCCEED, test2, 3);
+	DO_TEST(CS_CHAR test[] = "a\0b\0c\0";
+		CS_CHAR test2[] = "a\0b\0c\0", CS_UNITEXT_TYPE, test, 6, CS_UNITEXT_TYPE, 8, CS_SUCCEED, test2, 6);
+
 	ret = cs_ctx_drop(ctx);
 	if (ret != CS_SUCCEED) {
 		fprintf(stderr, "Drop failed\n");
