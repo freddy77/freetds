@@ -384,6 +384,7 @@ tds_get_cardinal_type(TDS_SERVER_TYPE datatype, int usertype)
 		return SYBVARBINARY;
 	case XSYBBINARY:
 		return SYBBINARY;
+	case SYBUNITEXT:
 	case SYBNTEXT:
 		return SYBTEXT;
 	case XSYBNVARCHAR:

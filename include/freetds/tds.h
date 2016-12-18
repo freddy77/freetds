@@ -377,7 +377,7 @@ extern const char *const tds_type_names[256];
 #define is_variable_type(x)   ((tds_type_flags_ms[x] & TDS_TYPEFLAG_VARIABLE) != 0)
 
 
-#define is_blob_type(x)       ((x)==SYBTEXT || (x)==SYBIMAGE || (x)==SYBNTEXT)
+#define is_blob_type(x)       ((x)==SYBTEXT || (x)==SYBIMAGE || (x)==SYBNTEXT || (x)==SYBUNITEXT)
 #define is_blob_col(x)        ((x)->column_varint_size > 2)
 /* large type means it has a two byte size field */
 /* define is_large_type(x) (x>128) */

@@ -3110,6 +3110,7 @@ tds_prtype(int type)
 		TYPE(SYBTIME, "time");
 		TYPE(SYB5BIGTIME, "bigtime");
 		TYPE(SYB5BIGDATETIME, "bigdatetime");
+		TYPE(SYBUNITEXT, "unitext");
 	default:
 		break;
 	}
@@ -3221,6 +3222,8 @@ tds_token_name(unsigned char marker)
 static void
 adjust_character_column_size(TDSSOCKET * tds, TDSCOLUMN * curcol)
 {
+	bool use_utf16;
+
 	CHECK_TDS_EXTRA(tds);
 	CHECK_COLUMN_EXTRA(curcol);
 
@@ -3228,9 +3231,11 @@ adjust_character_column_size(TDSSOCKET * tds, TDSCOLUMN * curcol)
 		curcol->char_conv = tds->conn->char_convs[client2ucs2];
 
 	/* Sybase UNI(VAR)CHAR fields are transmitted via SYBLONGBINARY and in UTF-16 */
-	if (curcol->on_server.column_type == SYBLONGBINARY && (
-		curcol->column_usertype == USER_UNICHAR_TYPE ||
-		curcol->column_usertype == USER_UNIVARCHAR_TYPE)) {
+	use_utf16 = curcol->on_server.column_type == SYBLONGBINARY &&
+		(curcol->column_usertype == USER_UNICHAR_TYPE ||
+		 curcol->column_usertype == USER_UNIVARCHAR_TYPE);
+	use_utf16 = use_utf16 || curcol->on_server.column_type == SYBUNITEXT;
+	if (use_utf16) {
 #ifdef WORDS_BIGENDIAN
 		static const char sybase_utf[] = "UTF-16BE";
 #else

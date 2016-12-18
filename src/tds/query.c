@@ -883,6 +883,10 @@ tds_get_column_declaration(TDSSOCKET * tds, TDSCOLUMN * curcol, char *out)
 	case SYBUINT8:
 		fmt = "UNSIGNED BIGINT";
 		break;
+	case SYBUNITEXT:
+		if (IS_TDS50(tds->conn))
+			fmt = "UNITEXT";
+		break;
 		/* nullable types should not occur here... */
 	case SYBFLTN:
 	case SYBMONEYN:

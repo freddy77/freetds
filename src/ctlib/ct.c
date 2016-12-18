@@ -2037,6 +2037,9 @@ _ct_get_client_type(TDSCOLUMN *col)
 	case SYBIMAGE:
 		return CS_IMAGE_TYPE;
 		break;
+	case SYBUNITEXT:
+		return CS_UNICHAR_TYPE;
+		break;
 	case SYBTEXT:
 		return CS_TEXT_TYPE;
 		break;
