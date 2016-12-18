@@ -181,10 +181,11 @@ check_attr_ird(ATTR_PARAMS)
 	ret = SQLColAttribute(odbc_stmt, 1, attr->value, NULL, SQL_IS_INTEGER, NULL, &i);
 	if (!SQL_SUCCEEDED(ret))
 		odbc_fatal(": failure not expected\n");
+	i = (SQLINTEGER) i;
 	/* SQL_DESC_LENGTH is the same of SQLDescribeCol len */
 	if (attr->value == SQL_DESC_LENGTH) {
 		SQLSMALLINT scale, si;
-		SQLULEN prec;
+		SQLULEN prec = 0;
 		CHKDescribeCol(1, NULL, 0, NULL, &si, &prec, &scale, &si, "S");
 		if (i != prec)
 			odbc_fatal(": attr %s SQLDescribeCol len %ld != SQLColAttribute len %ld\n", attr->name, (long) prec, (long) i);
