@@ -190,6 +190,11 @@ data_generic_set_type_info(TDSCOLUMN * col, struct _drecord *drec, SQLINTEGER od
 		drec->sql_desc_display_size = col->on_server.column_size;
 		SET_INFO("text", "'", "'");
 
+	case SYBUNITEXT:
+		drec->sql_desc_concise_type = SQL_WLONGVARCHAR;
+		drec->sql_desc_display_size = col->on_server.column_size / 2;
+		SET_INFO2("unitext", "'", "'", col->on_server.column_size / 2);
+
 	case SYBBIT:
 	case SYBBITN:
 		drec->sql_desc_concise_type = SQL_BIT;
@@ -361,7 +366,6 @@ data_generic_set_type_info(TDSCOLUMN * col, struct _drecord *drec, SQLINTEGER od
 
 	case SYBVOID:
 	case SYBINTERVAL:
-	case SYBUNITEXT:
 	case SYBXML:
 	case SYBMSUDT:
 		break;

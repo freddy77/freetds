@@ -451,6 +451,7 @@ odbc_sql2tds(TDS_STMT * stmt, const struct _drecord *drec_ixd, const struct _dre
 		if (res > curcol->column_size)
 			res = curcol->column_size;
 		break;
+	case SYBUNITEXT:
 	case SYBNTEXT:
 		dest_type = SYBTEXT;
 	case SYBTEXT:

@@ -757,6 +757,8 @@ odbc_sql_to_server_type(TDSCONNECTION * conn, int sql_type, int sql_unsigned)
 			return SYBMSXML;
 		/* fall thought */
 	case SQL_WLONGVARCHAR:
+		if (IS_TDS50(conn) && tds_capability_has_req(conn, TDS_REQ_DATA_UNITEXT))
+			return SYBUNITEXT;
 		if (IS_TDS7_PLUS(conn))
 			return SYBNTEXT;
 		/* fall thought */

@@ -2123,6 +2123,8 @@ _ct_get_server_type(TDSSOCKET *tds, int datatype)
 	case CS_NUMERIC_TYPE:		return SYBNUMERIC;
 	case CS_DECIMAL_TYPE:		return SYBDECIMAL;
 	case CS_VARBINARY_TYPE:		return SYBVARBINARY;
+	// FIXME sure ?? check proprietary library
+	case CS_UNITEXT_TYPE:		return SYBTEXT;
 	case CS_TEXT_TYPE:		return SYBTEXT;
 	case CS_UNIQUE_TYPE:		return SYBUNIQUE;
 	case CS_LONGBINARY_TYPE:	return SYBLONGBINARY;
