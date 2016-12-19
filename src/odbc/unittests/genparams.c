@@ -181,6 +181,8 @@ TestInput(SQLSMALLINT out_c_type, const char *type, SQLSMALLINT out_sql_type, co
 			sprintf(sbuf, "SELECT * FROM #tmp_insert WHERE CONVERT(NVARCHAR(2000), col) = CONVERT(NVARCHAR(2000), %s%s%s)", sep, expected, sep);
 		else if (strcmp(param_type, "IMAGE") == 0)
 			sprintf(sbuf, "SELECT * FROM #tmp_insert WHERE CONVERT(VARBINARY(255), col) = CONVERT(VARBINARY(255), %s%s%s)", sep, expected, sep);
+		else if (strcmp(param_type, "UNITEXT") == 0)
+			sprintf(sbuf, "SELECT * FROM #tmp_insert WHERE CONVERT(VARCHAR(255), col) = CONVERT(VARCHAR(255), %s%s%s)", sep, expected, sep);
 		else
 			sprintf(sbuf, "SELECT * FROM #tmp_insert WHERE col = CONVERT(%s, %s%s%s)", param_type, sep, expected, sep);
 		odbc_command(sbuf);
@@ -479,6 +481,8 @@ AllTests(void)
 		TestInput(SQL_C_WCHAR, "UNIVARCHAR(100)", SQL_WCHAR, "UNIVARCHAR(100)", "test");
 		TestInput(SQL_C_CHAR, "UNIVARCHAR(100)", SQL_WVARCHAR, "UNIVARCHAR(100)", "test");
 		TestInput(SQL_C_WCHAR, "UNIVARCHAR(100)", SQL_WVARCHAR, "UNIVARCHAR(100)", "test");
+		TestInput(SQL_C_WCHAR, "UNIVARCHAR(10)", SQL_WLONGVARCHAR, "UNITEXT", "1EasyTest3");
+		TestInput(SQL_C_CHAR, "UNITEXT", SQL_VARBINARY, "VARBINARY(20)", "4145544F -> AETO");
 	}
 }
 
