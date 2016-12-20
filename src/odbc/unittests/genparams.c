@@ -294,6 +294,7 @@ AllTests(void)
 
 	printf("use_cursors %d exec_direct %d prepare_before %d\n", use_cursors, exec_direct, prepare_before);
 
+#if 0
 	/* test some NULLs */
 	NullInput(SQL_C_CHAR, SQL_VARCHAR, "VARCHAR(100)");
 	NullInput(SQL_C_CHAR, SQL_LONGVARCHAR, "TEXT");
@@ -474,6 +475,7 @@ AllTests(void)
 		TestInput(SQL_C_TYPE_DATE, "DATE", SQL_TYPE_DATE, "DATE", "2005-07-22");
 		TestInput(SQL_C_TYPE_TIME, "TIME", SQL_TYPE_TIME, "TIME", "13:02:03");
 	}
+#endif
 
 	/* Sybase */
 	if (!odbc_db_is_microsoft()) {
@@ -482,7 +484,7 @@ AllTests(void)
 		TestInput(SQL_C_CHAR, "UNIVARCHAR(100)", SQL_WVARCHAR, "UNIVARCHAR(100)", "test");
 		TestInput(SQL_C_WCHAR, "UNIVARCHAR(100)", SQL_WVARCHAR, "UNIVARCHAR(100)", "test");
 		TestInput(SQL_C_WCHAR, "UNIVARCHAR(10)", SQL_WLONGVARCHAR, "UNITEXT", "1EasyTest3");
-		TestInput(SQL_C_CHAR, "UNITEXT", SQL_VARBINARY, "VARBINARY(20)", "4145544F -> AETO");
+//		TestInput(SQL_C_CHAR, "UNITEXT", SQL_VARBINARY, "VARBINARY(20)", "4145544F -> AETO");
 	}
 }
 
