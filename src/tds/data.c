@@ -285,6 +285,7 @@ tds_set_param_type(TDSCONNECTION * conn, TDSCOLUMN * curcol, TDS_SERVER_TYPE typ
 			curcol->blob_type = BLOB_TYPE_UNICHAR;
 			override_with_blob = true;
 			break;
+		case SYBUNITEXT:
 		case XSYBNVARCHAR:
 			curcol->column_usertype = USER_UNIVARCHAR_TYPE;
 			type = SYBLONGBINARY;
