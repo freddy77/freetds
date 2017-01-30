@@ -3349,6 +3349,7 @@ tds_multiple_query(TDSSOCKET *tds, TDSMULTIPLE *multiple, const char *query, TDS
 		tds_put_string(tds, " ", 1);
 	multiple->flags |= MUL_STARTED;
 
+	// TODO
 	return tds_send_emulated_execute(tds, query, params);
 }
 
@@ -3373,6 +3374,7 @@ tds_multiple_execute(TDSSOCKET *tds, TDSMULTIPLE *multiple, TDSDYNAMIC * dyn)
 		tds_put_string(tds, " ", 1);
 	multiple->flags |= MUL_STARTED;
 
+	// TODO
 	return tds_send_emulated_execute(tds, dyn->query, dyn->params);
 }
 
