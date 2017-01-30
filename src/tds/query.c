@@ -1736,6 +1736,9 @@ tds_submit_execute(TDSSOCKET * tds, TDSDYNAMIC * dyn)
 	}
 
 	if (dyn->emulated) {
+		if (IS_TDS50(tds->conn))
+			return tds_submit_query_params(tds, dyn->query, dyn->params, NULL);
+
 		TDS_PROPAGATE(tds_send_emulated_execute(tds, dyn->query, dyn->params));
 		return tds_query_flush_packet(tds);
 	}
