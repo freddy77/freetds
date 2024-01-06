@@ -446,6 +446,8 @@ config_write("
 
 endif(WIN32)
 
+pkg_check_modules(ICONV QUIET iconv)
+
 set(lib_BASE ${lib_RT} ${CMAKE_THREAD_LIBS_INIT})
 if(EXISTS "${CMAKE_SOURCE_DIR}/iconv/lib/iconv.lib")
 	set(lib_BASE ${lib_BASE} ${CMAKE_THREAD_LIBS_INIT} "${CMAKE_SOURCE_DIR}/iconv/lib/iconv.lib")
@@ -465,6 +467,25 @@ if(OPENSSL_FOUND)
 elseif(GNUTLS_FOUND)
 	set(lib_NETWORK ${lib_NETWORK} ${lib_GNUTLS})
 endif(OPENSSL_FOUND)
+
+# variables for PC files
+set(prefix "${CMAKE_INSTALL_PREFIX}")
+set(version, CMAKE_PROJECT_VERSION)
+if(IS_ABSOLUTE $(CMAKE_INSTALL_INCLUDEDIR))
+	set(includedir "${CMAKE_INSTALL_INCLUDEDIR}")
+else()
+	set(includedir "\$\{prefix\}/${CMAKE_INSTALL_INCLUDEDIR}")
+endif()
+if(IS_ABSOLUTE $(CMAKE_INSTALL_LIBDIR))
+	set(libdir "${CMAKE_INSTALL_LIBDIR}")
+else()
+	set(libdir "\$\{prefix\}/${CMAKE_INSTALL_LIBDIR}")
+endif()
+if (ICONV_FOUND)
+	set(pkg_libiconv ", iconv")
+else()
+	set(pkg_libiconv "")
+endif()
 
 include_directories(${CMAKE_BINARY_DIR}/include include iconv/include)
 

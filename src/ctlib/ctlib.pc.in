@@ -7,15 +7,15 @@
 #
 
 prefix="@prefix@"
-includedir=${prefix}/include
-libdir=${prefix}/lib/
+includedir="@includedir@"
+libdir="@libdir@"
 
 Name: CT-library
 Version: @version@
 Description: A free implementation of TDS protocol
 URL: https://github.com/FreeTDS/freetds
 Requires: 
-Requires.private: libssl, libcrypto, iconv
-Cflags: -I${includedir}/freetds
+Requires.private: libssl, libcrypto@pkg_libiconv@
+Cflags: -I${includedir}
 Libs: -L${libdir} -lct
 Libs.private: @libs_private@
