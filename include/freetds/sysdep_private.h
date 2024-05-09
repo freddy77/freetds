@@ -21,6 +21,8 @@
 #ifndef _tdsguard_gbdINUKdHN7rAOavGyKkWw_
 #define _tdsguard_gbdINUKdHN7rAOavGyKkWw_
 
+#include <config.h>
+
 #define TDS_ADDITIONAL_SPACE 16
 
 #ifdef MSG_NOSIGNAL

@@ -1,6 +1,8 @@
 #ifndef _tdsguard_frXREepoqzIh7i5y4TSoh7_
 #define _tdsguard_frXREepoqzIh7i5y4TSoh7_
 
+#include <config.h>
+
 #ifdef HAVE_NETTLE
 #include <nettle/des.h>
 

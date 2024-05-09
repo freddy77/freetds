@@ -1,6 +1,8 @@
 #ifndef _tdsguard_bJRBdagK4r9w58mnUbyvA0_
 #define _tdsguard_bJRBdagK4r9w58mnUbyvA0_
 
+#include <config.h>
+
 #ifndef HAVE_NETTLE
 
 #include <freetds/pushvis.h>
