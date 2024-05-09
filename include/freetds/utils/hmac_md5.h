@@ -20,6 +20,8 @@
 #ifndef _tdsguard_cKNGa1szdpreKWqKpKKcAA_
 #define _tdsguard_cKNGa1szdpreKWqKpKKcAA_
 
+#include <config.h>
+
 #include <freetds/pushvis.h>
 void hmac_md5(const unsigned char key[16],
               const unsigned char* data, size_t data_len,

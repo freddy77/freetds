@@ -20,6 +20,8 @@
 #ifndef _tdsguard_hKphrpWEELXHaaZkiGPQUV_
 #define _tdsguard_hKphrpWEELXHaaZkiGPQUV_
 
+#include <config.h>
+
 #ifndef __cplusplus
 
 #ifdef HAVE_STDBOOL_H
