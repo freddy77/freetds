@@ -20,6 +20,8 @@
 #ifndef _tdsguard_aej6DXYKBycQe7Wyg2gHaQ_
 #define _tdsguard_aej6DXYKBycQe7Wyg2gHaQ_
 
+#include <config.h>
+
 typedef struct dlist_ring {
 	struct dlist_ring *next;
 	struct dlist_ring *prev;
