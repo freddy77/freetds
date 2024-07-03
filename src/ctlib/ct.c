@@ -167,6 +167,15 @@ _ct_get_user_api_layer_error(int error)
 	case 29:
 		return "This type of command cannot be batched with the command already initialized on the command structure.";
 		break;
+	case 25:
+		return "Failed in conversion routine - condition overflow."
+			"  col = %1! row = %2!.";
+	case 26:
+		return "Failed in conversion routine - syntax error."
+			"  col = %1! row = %2!.";
+	case 42:
+		return "Data truncated while doing local character set"
+			" conversion.  col = %1! row = %2!.";
 	case 51:
 		return "Exactly one of context and connection must be non-NULL.";
 		break;
@@ -2006,7 +2015,7 @@ _ct_bind_data(CS_CONTEXT *ctx, TDSRESULTINFO * resinfo, TDSRESULTINFO *bindinfo,
 		destfmt.format = bindcol->column_bindfmt;
 
 		/* if convert return FAIL mark error but process other columns */
-		ret = _cs_convert(ctx, &srcfmt, src, &destfmt, dest, pdatalen, TDS_INVALID_TYPE, NULL);
+		ret = _cs_convert(ctx, &srcfmt, src, &destfmt, dest, pdatalen, TDS_INVALID_TYPE, NULL, NULL);
 		if (ret != CS_SUCCEED) {
 			tdsdump_log(TDS_DBG_FUNC, "cs_convert-result = %d\n", ret);
 			result = 1;

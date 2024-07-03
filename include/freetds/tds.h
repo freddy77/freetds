@@ -1741,6 +1741,7 @@ struct tds_bcpinfo
 	TDS_INT text_sent;
 	TDS_INT next_col;
 	TDS_INT blob_cols;
+	TDS_INT rows_sent;
 	bool with_triggers;
 };
 
