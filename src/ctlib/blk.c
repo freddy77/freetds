@@ -789,6 +789,7 @@ _blk_get_col_data(TDSBCPINFO *bulk, TDSCOLUMN *bindcol, int offset)
 		CS_INT desttype;
 		TDS_SERVER_TYPE tds_desttype = TDS_INVALID_TYPE;
 		TDSSOCKET * tds = CONN(blkdesc)->tds_socket;
+		BLK_CONV_STATUS conv_status = BLK_CONV_OK;
 
 		srcfmt.datatype = srctype;
 		srcfmt.maxlength = srclen;
@@ -810,7 +811,18 @@ _blk_get_col_data(TDSBCPINFO *bulk, TDSCOLUMN *bindcol, int offset)
 		/* if convert return FAIL mark error but process other columns */
 		result = _cs_convert(ctx, &srcfmt, (CS_VOID *) src,
 				     &destfmt, (CS_VOID *) bindcol->bcp_column_data->data, &destlen, tds_desttype,
-				     (CS_VOID **) &coldata->data);
+				     (CS_VOID **) &coldata->data, &conv_status);
+		if (conv_status != BLK_CONV_OK) {
+			const TDSRESULTINFO * info = bulk->bindinfo;
+			TDS_USMALLINT colnum;
+			for (colnum = 0;  colnum < info->num_cols;  ++colnum) {
+				if (info->columns[colnum] == bindcol)
+					break;
+			}
+			_ctclient_msg(ctx, CONN(blkdesc), "blk_rowxfer",
+				      2, 7, 1, conv_status, "%d,%hu",
+				      bulk->rows_sent + 1, colnum + 1);
+		}
 		if (result != CS_SUCCEED) {
 			tdsdump_log(TDS_DBG_ERROR, "conversion from srctype %d to desttype %d failed\n",
 				    srctype, desttype);
