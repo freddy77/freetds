@@ -20,15 +20,7 @@
 /*
  * Purpose: test bytes.h header.
  */
-#undef NDEBUG
-#include <config.h>
-
-#include <stdio.h>
-#include <assert.h>
-
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
+#include "common.h"
 
 #include "tds_sysdep_public.h"
 #include <freetds/bytes.h>
@@ -47,8 +39,8 @@
 #define CHECK(off, bytes, endian, expected) do { \
 	uint32_t val = READ(bufs.u1.buf, off, bytes, endian); \
 	WRITE(bufs.u2.buf, off, bytes, endian, val); \
-	assert(READ(bufs.u1.buf, off, bytes, endian) == READ(bufs.u2.buf, off, bytes, endian)); \
-	assert(val == expected); \
+	TDS_ASSERT(READ(bufs.u1.buf, off, bytes, endian) == READ(bufs.u2.buf, off, bytes, endian)); \
+	TDS_ASSERT(val == expected); \
 } while(0)
 
 int
@@ -86,7 +78,7 @@ main(void)
 	CHECK(21, 4, BE, 0x5ad550cbu);
 
 	CHECK(25, 1, BE, 0x46);
-	assert(memcmp(bufs.u1.buf, bufs.u2.buf, sizeof(bufs.u1.buf)) == 0);
+	TDS_ASSERT(memcmp(bufs.u1.buf, bufs.u2.buf, sizeof(bufs.u1.buf)) == 0);
 
 	return 0;
 }

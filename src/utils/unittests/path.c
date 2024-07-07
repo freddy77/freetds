@@ -20,13 +20,7 @@
 /*
  * Purpose: test path utilities.
  */
-#undef NDEBUG
-#include <config.h>
-
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "common.h"
 
 #if HAVE_UNISTD_H
 #include <unistd.h>
@@ -51,61 +45,61 @@ int main(void)
 
 	/* tds_dir_len */
 	len = tds_dir_len(TDS_DIR("this is a filename"));
-	assert(len == 18);
+	TDS_ASSERT(len == 18);
 
 	/* tds_dir_dup, tds_dir_cmp */
 	path = tds_dir_dup(TDS_DIR("filename"));
-	assert(path);
-	assert(tds_dir_cmp(path, TDS_DIR("filename")) == 0);
+	TDS_ASSERT(path);
+	TDS_ASSERT(tds_dir_cmp(path, TDS_DIR("filename")) == 0);
 	free(path);
 
 	/* tds_join_path, tds_dir_cmp */
 	path = tds_join_path(TDS_DIR("a") , TDS_DIR("b"));
-	assert(path);
-	assert(tds_dir_cmp(path, is_windows ? TDS_DIR("a\\b") : TDS_DIR("a/b")) == 0);
+	TDS_ASSERT(path);
+	TDS_ASSERT(tds_dir_cmp(path, is_windows ? TDS_DIR("a\\b") : TDS_DIR("a/b")) == 0);
 	free(path);
 
 	/* tds_join_path, tds_dir_cmp */
 	path = tds_join_path(TDS_DIR("") , TDS_DIR("b"));
-	assert(path);
-	assert(tds_dir_cmp(path, TDS_DIR("b")) == 0);
+	TDS_ASSERT(path);
+	TDS_ASSERT(tds_dir_cmp(path, TDS_DIR("b")) == 0);
 	free(path);
 
 	/* tds_dir_open */
 	unlink("path.txt");
 	f = fopen("path.txt", "r");
-	assert(f == NULL);
+	TDS_ASSERT(f == NULL);
 	f = tds_dir_open(TDS_DIR("path.txt"), TDS_DIR("w"));
-	assert(f != NULL);
+	TDS_ASSERT(f != NULL);
 	fclose(f);
 	f = fopen("path.txt", "r");
-	assert(f != NULL);
+	TDS_ASSERT(f != NULL);
 	fclose(f);
 	unlink("path.txt");
 
 	/* tdsPRIdir */
 	snprintf(c_buf, sizeof(c_buf), "x%" tdsPRIdir "y", TDS_DIR("abc"));
-	assert(strcmp(c_buf, "xabcy") == 0);
+	TDS_ASSERT(strcmp(c_buf, "xabcy") == 0);
 
 	/* tds_dir_snprintf */
 	tds_dir_snprintf(path_buf, TDS_VECTOR_SIZE(path_buf), TDS_DIR("x%sy"), TDS_DIR("abc"));
-	assert(tds_dir_cmp(path_buf, TDS_DIR("xabcy")) == 0);
+	TDS_ASSERT(tds_dir_cmp(path_buf, TDS_DIR("xabcy")) == 0);
 
 	/* tds_dir_from_cstr */
 	path = tds_dir_from_cstr("filename");
-	assert(tds_dir_cmp(path, TDS_DIR("filename")) == 0);
+	TDS_ASSERT(tds_dir_cmp(path, TDS_DIR("filename")) == 0);
 	free(path);
 
 	/* specific to Windows implementation */
 #ifdef _WIN32
 	/* utf-8 */
 	path = tds_dir_from_cstr("abc\xc2\xab");
-	assert(tds_dir_cmp(path, L"abc\u00ab") == 0);
+	TDS_ASSERT(tds_dir_cmp(path, L"abc\u00ab") == 0);
 	free(path);
 
 	/* no utf-8 */
 	path = tds_dir_from_cstr("abc\xab");
-	assert(tds_dir_cmp(path, L"abc\u00ab") == 0 || tds_dir_cmp(path, L"abc?") == 0);
+	TDS_ASSERT(tds_dir_cmp(path, L"abc\u00ab") == 0 || tds_dir_cmp(path, L"abc?") == 0);
 	free(path);
 #endif
 

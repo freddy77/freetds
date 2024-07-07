@@ -42,7 +42,7 @@ get_unichar(const char **psrc)
 			++src;
 		}
 		n = strtol(src+2, &end, radix);
-		assert(*end == ';' && n > 0 && n < 0x10000);
+		TDS_ASSERT(*end == ';' && n > 0 && n < 0x10000);
 		src = end + 1;
 	} else {
 		n = (unsigned char) *src++;

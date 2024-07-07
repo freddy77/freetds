@@ -252,7 +252,7 @@ read_login_info(int argc, char **argv)
 	dbrecftos(BASENAME);
 #endif
 	len = snprintf(sql_file, sizeof(sql_file), "%s/%s.sql", FREETDS_SRCDIR, BASENAME);
-	assert(len >= 0 && len <= sizeof(sql_file));
+	TDS_ASSERT(len >= 0 && len <= sizeof(sql_file));
 
 	if (input_file)
 		fclose(input_file);
@@ -314,7 +314,7 @@ RETCODE
 sql_reopen(const char *fn)
 {
 	int len = snprintf(sql_file, sizeof(sql_file), "%s/%s.sql", FREETDS_SRCDIR, fn);
-	assert(len >= 0 && len <= sizeof(sql_file));
+	TDS_ASSERT(len >= 0 && len <= sizeof(sql_file));
 
 	if (input_file)
 		fclose(input_file);

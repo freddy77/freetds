@@ -30,7 +30,7 @@ query_test(const char* expected, const char *expected_status)
 	Record *rec = NULL;
 	char status[20];
 
-	assert(odbc_stmt != SQL_NULL_HSTMT);
+	TDS_ASSERT(odbc_stmt != SQL_NULL_HSTMT);
 	odbc_reset_statement();
 
 	SQLSetStmtAttr(odbc_stmt, SQL_ATTR_ROW_STATUS_PTR, statuses, 0);
@@ -43,7 +43,7 @@ query_test(const char* expected, const char *expected_status)
 		descs = (SQLCHAR *) ODBC_GET(sizeof(SQLCHAR) * ARRAY_SIZE * desc_len);
 		desc_lens = (SQLLEN *) ODBC_GET(sizeof(SQLLEN) * ARRAY_SIZE);
 		id_lens = (SQLLEN *) ODBC_GET(sizeof(SQLLEN) * ARRAY_SIZE);
-		assert(descs && ids && desc_lens && id_lens);
+		TDS_ASSERT(descs && ids && desc_lens && id_lens);
 	} else {
 		rec_size = (sizeof(Record) + (sizeof(SQLCHAR) * desc_len + sizeof(SQLLEN) - 1)) & ~(sizeof(SQLLEN) - 1);
 		SQLSetStmtAttr(odbc_stmt, SQL_ATTR_ROW_BIND_TYPE, TDS_INT2PTR(rec_size), 0);
@@ -75,7 +75,7 @@ query_test(const char* expected, const char *expected_status)
 
 	CHKFetch(expected);
 
-	assert(processed <= ARRAY_SIZE);
+	TDS_ASSERT(processed <= ARRAY_SIZE);
 
 	for (i = 0; i < processed; ++i) {
 		char buf[128];

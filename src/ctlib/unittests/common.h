@@ -24,6 +24,8 @@
 #define FREETDS_SRCDIR FREETDS_TOPDIR "/src/ctlib/unittests"
 #endif
 
+#define TDS_ASSERT assert
+
 extern char SERVER[512];
 extern char DATABASE[512];
 extern char USER[512];

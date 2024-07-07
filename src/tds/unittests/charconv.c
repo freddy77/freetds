@@ -64,7 +64,7 @@ convert(TDSSOCKET *tds, TDSICONV *conv, TDS_ICONV_DIRECTION direction,
 	TDSSTATICINSTREAM r;
 	TDSSTATICOUTSTREAM w;
 
-	assert(in && out);
+	TDS_ASSERT(in && out);
 
 	memcpy(in, from, from_len);
 	tds_staticin_stream_init(&r, in, from_len);
@@ -119,7 +119,7 @@ add_odd(char *buf, int *pos, enum Odd type)
 		return EINVAL;
 
 	default:
-		assert(0);
+		TDS_ASSERT(0);
 	}
 	return 0;
 }
@@ -141,7 +141,7 @@ add_odd2(char *buf, int *pos, enum Odd type)
 	case ODD_INCOMPLETE:
 		break;
 	default:
-		assert(0);
+		TDS_ASSERT(0);
 	}	
 }
 
@@ -161,7 +161,7 @@ err_handler(const TDSCONTEXT * tds_ctx TDS_UNUSED, TDSSOCKET * tds TDS_UNUSED, T
 		fprintf(stderr, "Unexpected error: %s\n", msg->message);
 		exit(1);
 	}
-	assert(old_err == 0 || old_err == captured_errno);
+	TDS_ASSERT(old_err == 0 || old_err == captured_errno);
 	return TDS_INT_CANCEL;
 }
 
@@ -240,19 +240,19 @@ test(TDSSOCKET *tds, enum Odd odd_type)
 
 
 		if (err) {
-			assert(last_errno == err);
-			assert(TDS_FAILED(res));
-			assert(!tds || captured_errno == last_errno);
+			TDS_ASSERT(last_errno == err);
+			TDS_ASSERT(TDS_FAILED(res));
+			TDS_ASSERT(!tds || captured_errno == last_errno);
 		} else {
-			assert(TDS_SUCCEED(res));
-			assert(captured_errno == 0);
+			TDS_ASSERT(TDS_SUCCEED(res));
+			TDS_ASSERT(captured_errno == 0);
 		}
 		if (out_len != l) {
 			fprintf(stderr, "out %u bytes expected %d\n",
 				(unsigned int) out_len, l);
 			exit(1);
 		}
-		assert(memcmp(buf_out, buf, l) == 0);
+		TDS_ASSERT(memcmp(buf_out, buf, l) == 0);
 	}
 }
 
@@ -285,12 +285,12 @@ big_test(TDSSOCKET *tds)
 		err = l * 2 > limit ? E2BIG : 0;
 
 		if (err) {
-			assert(last_errno == err);
-			assert(TDS_FAILED(res));
-			assert(!tds || captured_errno == last_errno);
+			TDS_ASSERT(last_errno == err);
+			TDS_ASSERT(TDS_FAILED(res));
+			TDS_ASSERT(!tds || captured_errno == last_errno);
 		} else {
-			assert(TDS_SUCCEED(res));
-			assert(captured_errno == 0);
+			TDS_ASSERT(TDS_SUCCEED(res));
+			TDS_ASSERT(captured_errno == 0);
 		}
 		if (out_len != i*2 && i*2 <= limit) {
 			fprintf(stderr, "out %u bytes expected %d\n",

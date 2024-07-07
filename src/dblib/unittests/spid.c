@@ -43,7 +43,7 @@ main(int argc, char **argv)
 	printf("Using database \"%s\"\n", DATABASE);
 	if (strlen(DATABASE)) {
 		erc = dbuse(dbproc, DATABASE);
-		assert(erc == SUCCEED);
+		TDS_ASSERT(erc == SUCCEED);
 	}
 
 #ifdef DBQUOTEDIDENT
@@ -65,7 +65,7 @@ main(int argc, char **argv)
 		fprintf(stderr, "Failed.  Expected a row\n");
 		return 1;
 	}
-	assert(expected_spid > 0);
+	TDS_ASSERT(expected_spid > 0);
 
 	actual_spid = dbspid(dbproc);
 	if (expected_spid != actual_spid) {

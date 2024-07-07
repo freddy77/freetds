@@ -230,7 +230,7 @@ test(int per_process)
 				r++;
 				continue;
 			}
-			assert(DBROWS(dbproc) == SUCCEED);
+			TDS_ASSERT(DBROWS(dbproc) == SUCCEED);
 			printf("dbrows() returned SUCCEED, processing rows\n");
 
 			ncols = dbnumcols(dbproc);

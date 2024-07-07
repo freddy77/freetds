@@ -10,15 +10,15 @@ TESTS = \
 	$(NULL)
 check_PROGRAMS = $(TESTS)
 
-passarg_SOURCES = passarg.c
-condition_SOURCES = condition.c
-mutex1_SOURCES = mutex1.c
-dlist_SOURCES = dlist.c
-smp_SOURCES = smp.c
-path_SOURCES = path.c
+passarg_SOURCES = passarg.c common.h
+condition_SOURCES = condition.c common.h
+mutex1_SOURCES = mutex1.c common.h
+dlist_SOURCES = dlist.c common.h
+smp_SOURCES = smp.c common.h
+path_SOURCES = path.c common.h
 if !HAVE_SSPI
 TESTS += challenge$(EXEEXT)
-challenge_SOURCES= challenge.c
+challenge_SOURCES= challenge.c common.h
 endif
 
 AM_CPPFLAGS = -I$(top_srcdir)/include
