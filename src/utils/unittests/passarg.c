@@ -16,24 +16,11 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#undef NDEBUG
-#include <config.h>
-
-#include <stdio.h>
-
-#if HAVE_STDLIB_H
-#include <stdlib.h>
-#endif /* HAVE_STDLIB_H */
+#include "common.h"
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-
-#if HAVE_STRING_H
-#include <string.h>
-#endif /* HAVE_STRING_H */
-
-#include <assert.h>
 
 #include <freetds/sysdep_private.h>
 #include <freetds/utils.h>
@@ -45,23 +32,23 @@ int main(void)
 	char *p;
 
 	p = tds_getpassarg(pwd);
-	assert(p);
-	assert(strcmp(pwd, "********") == 0);
-	assert(strcmp(p, "password") == 0);
+	TDS_ASSERT(p);
+	TDS_ASSERT(strcmp(pwd, "********") == 0);
+	TDS_ASSERT(strcmp(p, "password") == 0);
 	free(p);
 	free(pwd);
 
 	f = fopen("passarg.in", "w");
-	assert(f);
+	TDS_ASSERT(f);
 	fputs("line1pwd\nline2pwd\n", f);
 	fclose(f);
 
 	f = freopen("passarg.in", "r", stdin);
-	assert(f);
+	TDS_ASSERT(f);
 
 	p = tds_getpassarg("-");
-	assert(p);
-	assert(strcmp(p, "line1pwd") == 0);
+	TDS_ASSERT(p);
+	TDS_ASSERT(strcmp(p, "line1pwd") == 0);
 	free(p);
 
 	unlink("passarg.in");

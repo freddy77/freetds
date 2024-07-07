@@ -294,7 +294,7 @@ pack(const char *fmt, ...)
 		unsigned n = va_arg(v, unsigned);
 		int i, l = 2;
 
-		assert(p - out + 8 < sizeof(out));
+		TDS_ASSERT(p - out + 8 < sizeof(out));
 		switch (*fmt) {
 		case 'l':
 			l += 2;
@@ -305,7 +305,7 @@ pack(const char *fmt, ...)
 			}
 			break;
 		default:
-			assert(0);
+			TDS_ASSERT(0);
 		}
 	}
 	*p = 0;

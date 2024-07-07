@@ -49,11 +49,11 @@ main(int argc, char **argv)
 		printf("dbresult succeeded dropping procedure\n");
 		while ((erc = dbnextrow(dbproc)) == SUCCEED) {
 			printf("dbnextrow returned spurious rows dropping procedure\n");
-			assert(0); /* dropping a procedure returns no rows */
+			TDS_ASSERT(0); /* dropping a procedure returns no rows */
 		}
-		assert(erc == NO_MORE_ROWS);
+		TDS_ASSERT(erc == NO_MORE_ROWS);
 	}
-	assert(erc == NO_MORE_RESULTS);
+	TDS_ASSERT(erc == NO_MORE_RESULTS);
 
 	printf("creating proc\n");
 	sql_cmd(dbproc);
@@ -62,11 +62,11 @@ main(int argc, char **argv)
 		exit(1);
 	}
 	while ((erc = dbresults(dbproc)) != NO_MORE_RESULTS) {
-		assert(erc != FAIL);
+		TDS_ASSERT(erc != FAIL);
 		while ((erc = dbnextrow(dbproc)) == SUCCEED) {
-			assert(0); /* creating a procedure returns no rows */
+			TDS_ASSERT(0); /* creating a procedure returns no rows */
 		}
-		assert(erc == NO_MORE_ROWS);
+		TDS_ASSERT(erc == NO_MORE_ROWS);
 	}
 
 	sql_cmd(dbproc);
@@ -78,9 +78,9 @@ main(int argc, char **argv)
 			exit(1);
 		}
 		while ((erc = dbnextrow(dbproc)) == SUCCEED) {
-			assert(0); /* procedure returns no rows */
+			TDS_ASSERT(0); /* procedure returns no rows */
 		}
-		assert(erc == NO_MORE_ROWS);
+		TDS_ASSERT(erc == NO_MORE_ROWS);
 	}
 
 #if defined(DBTDS_7_0) && defined(DBTDS_7_1) && defined(DBTDS_7_2) && defined(DBTDS_7_3) \
@@ -152,11 +152,11 @@ main(int argc, char **argv)
 		printf("dbresult succeeded dropping procedure\n");
 		while ((erc = dbnextrow(dbproc)) == SUCCEED) {
 			printf("dbnextrow returned spurious rows dropping procedure\n");
-			assert(0); /* dropping a procedure returns no rows */
+			TDS_ASSERT(0); /* dropping a procedure returns no rows */
 		}
-		assert(erc == NO_MORE_ROWS);
+		TDS_ASSERT(erc == NO_MORE_ROWS);
 	}
-	assert(erc == NO_MORE_RESULTS);
+	TDS_ASSERT(erc == NO_MORE_RESULTS);
 
 	printf("creating proc t0022a\n");
 	sql_cmd(dbproc);
@@ -165,11 +165,11 @@ main(int argc, char **argv)
 		exit(1);
 	}
 	while ((erc = dbresults(dbproc)) != NO_MORE_RESULTS) {
-		assert(erc != FAIL);
+		TDS_ASSERT(erc != FAIL);
 		while ((erc = dbnextrow(dbproc)) == SUCCEED) {
-			assert(0); /* creating a procedure returns no rows */
+			TDS_ASSERT(0); /* creating a procedure returns no rows */
 		}
-		assert(erc == NO_MORE_ROWS);
+		TDS_ASSERT(erc == NO_MORE_ROWS);
 	}
 
 	sql_cmd(dbproc);
@@ -185,25 +185,25 @@ main(int argc, char **argv)
 		}
 		printf("procedure returned %srows\n", DBROWS(dbproc)==SUCCEED? "" : "no ");
 		while ((erc = dbnextrow(dbproc)) == SUCCEED) {
-			assert(0); /* procedure returns no rows */
+			TDS_ASSERT(0); /* procedure returns no rows */
 		}
-		assert(erc == NO_MORE_ROWS);
+		TDS_ASSERT(erc == NO_MORE_ROWS);
 		
 		fret = dbhasretstat(dbproc);
 		printf("procedure has %sreturn status\n", fret==TRUE? "" : "no ");
-		assert(fret == TRUE);
+		TDS_ASSERT(fret == TRUE);
 		
 		status = dbretstatus(dbproc);
 		printf("return status %d is %d\n", i, (int) status);
 		switch (i) {
-		case 1: assert(status == 17); break;
-		case 2: assert(status == 1024); break;
-		default: assert(i <= expected_iterations);
+		case 1: TDS_ASSERT(status == 17); break;
+		case 2: TDS_ASSERT(status == 1024); break;
+		default: TDS_ASSERT(i <= expected_iterations);
 		}
 		
 	}
 
-	assert(erc == NO_MORE_RESULTS);
+	TDS_ASSERT(erc == NO_MORE_RESULTS);
 	
 	printf("Dropping proc t0022a\n");
 	sql_cmd(dbproc);

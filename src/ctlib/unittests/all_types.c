@@ -20,14 +20,14 @@ static void test_type(TDSSOCKET *tds TDS_UNUSED, TDSCOLUMN *col)
 	/* we should be able to support a type coming from server */
 	if (_ct_get_client_type(col, false) == CS_ILLEGAL_TYPE) {
 		fprintf(stderr, "not supported\n");
-		assert(0);
+		TDS_ASSERT(0);
 	}
 
 	/* try to convert anyway, this should succeed */
 	resinfo = tds_alloc_results(1);
-	assert(resinfo);
+	TDS_ASSERT(resinfo);
 	bindinfo = tds_alloc_results(1);
-	assert(bindinfo);
+	TDS_ASSERT(bindinfo);
 
 	/* hack to pass our column to _ct_bind_data */
 	oldcol = resinfo->columns[0];
@@ -45,15 +45,15 @@ static void test_type(TDSSOCKET *tds TDS_UNUSED, TDSCOLUMN *col)
 	/* every column should be at least be convertible to something */
 	if (_ct_bind_data(ctx, resinfo, bindinfo, 0)) {
 		fprintf(stderr, "conversion failed\n");
-		assert(0);
+		TDS_ASSERT(0);
 	}
 
 	/* just safety, we use small data for now */
-	assert(len < sizeof(out_buf));
+	TDS_ASSERT(len < sizeof(out_buf));
 
 	/* we said terminated, check for terminator */
-	assert(len >= 1 && len < sizeof(out_buf));
-	assert(out_buf[len - 1] == 0);
+	TDS_ASSERT(len >= 1 && len < sizeof(out_buf));
+	TDS_ASSERT(out_buf[len - 1] == 0);
 	printf("output (%d): %s\n", len, out_buf);
 
 	resinfo->columns[0] = oldcol;
@@ -72,9 +72,9 @@ main(void)
 	check_call(cs_ctx_alloc, (CS_VERSION_100, &ctx));
 
 	tds_ctx = tds_alloc_context(NULL);
-	assert(tds_ctx);
+	TDS_ASSERT(tds_ctx);
 	tds = tds_alloc_socket(tds_ctx, 512);
-	assert(tds);
+	TDS_ASSERT(tds);
 	tds->conn->use_iconv = 0;
 	if (TDS_FAILED(tds_iconv_open(tds->conn, "UTF-8", 1))) {
 		fprintf(stderr, "Failed to initialize iconv\n");

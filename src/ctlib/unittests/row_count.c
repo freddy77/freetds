@@ -167,7 +167,7 @@ ex_display_results(CS_COMMAND * cmd, char *results)
 
 		/* check expected results are the same as got ones */
 		pos = -1;
-		assert(sscanf(results, "%30s %d %n", res, &rows, &pos) >= 2 && pos > 0);
+		TDS_ASSERT(sscanf(results, "%30s %d %n", res, &rows, &pos) >= 2 && pos > 0);
 		results += pos;
 		if (strcmp(res_type_str(res_type), res) != 0 || rowsAffected != rows) {
 			fprintf(stderr, "Expected ct_results %s rows %d\n", res, rows);

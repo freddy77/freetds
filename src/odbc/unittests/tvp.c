@@ -55,13 +55,13 @@ get_desc_field(SQLINTEGER desc_type, SQLSMALLINT icol, SQLSMALLINT fDescType, si
 	SQLINTEGER ind;
 	field_output buf;
 
-	assert(size <= sizeof(buf));
+	TDS_ASSERT(size <= sizeof(buf));
 	CHKGetStmtAttr(desc_type, &desc, sizeof(desc), &ind, "S");
 
 	memset(&buf, 0x5a, sizeof(buf));
 	ind = 1234;
 	CHKGetDescField(desc, icol, fDescType, &buf, size, &ind, "S");
-	assert(ind == size);
+	TDS_ASSERT(ind == size);
 
 	return buf;
 }
@@ -86,7 +86,7 @@ check_cond(bool condition, const char *fmt, ...)
 		return ret;
 
 	va_start(ap, fmt);
-	assert(vasprintf(&ret, fmt, ap) >= 0);
+	TDS_ASSERT(vasprintf(&ret, fmt, ap) >= 0);
 	va_end(ap);
 	return ret;
 }
@@ -175,7 +175,7 @@ TestTVPInsert(void)
 	CHKSetDescField(apd, 1, SQL_DESC_CONCISE_TYPE, TDS_INT2PTR(SQL_C_DOUBLE), sizeof(SQLSMALLINT), "S");
 	ptr = GET_DESC_FIELD(APP, 1, SQL_DESC_DATA_PTR, SQLPOINTER);
 	CHECK_COND((ptr == NULL, "SQL_DESC_DATA_PTR expected %p got %p", NULL, ptr));
-	assert(!failed);
+	TDS_ASSERT(!failed);
 
 	CHKBindParameter(1, SQL_PARAM_INPUT, SQL_C_DEFAULT, SQL_SS_TABLE, MAX_ROWS, 0, tableName, 7 * sizeof(SQLWCHAR), NULL, "S");
 	dirty_name(tableName);
@@ -339,22 +339,22 @@ TestErrors(void)
 	/* SQL error 07006 -- [Microsoft][ODBC Driver 17 for SQL Server]Restricted data type attribute violation */
 	CHKBindParameter(1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_SS_TABLE, MAX_ROWS, 0, tableName, SQL_NTS, &numRows, "E");
 	odbc_read_error();
-	assert(strcmp(odbc_sqlstate, "07006") == 0);
+	TDS_ASSERT(strcmp(odbc_sqlstate, "07006") == 0);
 
 	/* SQL error HY105 -- [Microsoft][ODBC Driver 17 for SQL Server]Invalid parameter type */
 	CHKBindParameter(1, SQL_PARAM_OUTPUT, SQL_C_DEFAULT, SQL_SS_TABLE, MAX_ROWS, 0, tableName, SQL_NTS, &numRows, "E");
 	odbc_read_error();
-	assert(strcmp(odbc_sqlstate, "HY105") == 0);
+	TDS_ASSERT(strcmp(odbc_sqlstate, "HY105") == 0);
 
 	/* SQL error HY105 -- [Microsoft][ODBC Driver 17 for SQL Server]Invalid parameter type */
 	CHKBindParameter(1, SQL_PARAM_OUTPUT, SQL_C_LONG, SQL_SS_TABLE, MAX_ROWS, 0, tableName, SQL_NTS, &numRows, "E");
 	odbc_read_error();
-	assert(strcmp(odbc_sqlstate, "HY105") == 0);
+	TDS_ASSERT(strcmp(odbc_sqlstate, "HY105") == 0);
 
 	/* SQL error HY105 -- [Microsoft][ODBC Driver 17 for SQL Server]Invalid parameter type */
 	CHKBindParameter(1, SQL_PARAM_INPUT_OUTPUT, SQL_C_DEFAULT, SQL_SS_TABLE, MAX_ROWS, 0, tableName, SQL_NTS, &numRows, "E");
 	odbc_read_error();
-	assert(strcmp(odbc_sqlstate, "HY105") == 0);
+	TDS_ASSERT(strcmp(odbc_sqlstate, "HY105") == 0);
 
 	CHKBindParameter(1, SQL_PARAM_INPUT, SQL_C_DEFAULT, SQL_SS_TABLE, MAX_ROWS, 0, tableName, SQL_NTS, &numRows, "S");
 	tableName[0] = 'A';
@@ -364,14 +364,14 @@ TestErrors(void)
 	/* SQL error IM020 -- [Microsoft][ODBC Driver 17 for SQL Server]Parameter focus does not refer to a table-valued parameter */
 	CHKSetStmtAttr(SQL_SOPT_SS_PARAM_FOCUS, (SQLPOINTER) 2, SQL_IS_INTEGER, "E");
 	odbc_read_error();
-	assert(strcmp(odbc_sqlstate, "IM020") == 0);
+	TDS_ASSERT(strcmp(odbc_sqlstate, "IM020") == 0);
 
 	CHKSetStmtAttr(SQL_SOPT_SS_PARAM_FOCUS, (SQLPOINTER) 1, SQL_IS_INTEGER, "S");
 
 	/* SQL error HY004 -- [Microsoft][ODBC Driver 17 for SQL Server]Invalid SQL data type */
 	CHKBindParameter(1, SQL_PARAM_INPUT, SQL_C_DEFAULT, SQL_SS_TABLE, MAX_ROWS, 0, tableName, SQL_NTS, &numRows, "E");
 	odbc_read_error();
-	assert(strcmp(odbc_sqlstate, "HY004") == 0);
+	TDS_ASSERT(strcmp(odbc_sqlstate, "HY004") == 0);
 
 	CHKBindParameter(1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, intCol, sizeof(SQLINTEGER), lIntCol, "S");
 	CHKBindParameter(2, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_CHAR, MAX_STRING_LENGTH, 0, strCol, MAX_STRING_LENGTH, lStrCol, "S");
@@ -494,7 +494,7 @@ TestDescriptorValues(void)
 
 	CHKBindParameter(1, SQL_PARAM_INPUT, SQL_C_DEFAULT, SQL_SS_TABLE, MAX_ROWS, 0, tableName, SQL_NTS, &numRows, "S");
 
-	assert(!failed);
+	TDS_ASSERT(!failed);
 
 	odbc_reset_statement();
 }
@@ -519,7 +519,7 @@ memory_usage(void)
 			if (hinfo._useflag == _USEDENTRY)
 				ret += hinfo._size;
 		}
-		assert(heapstatus == _HEAPEMPTY || heapstatus == _HEAPEND);
+		TDS_ASSERT(heapstatus == _HEAPEMPTY || heapstatus == _HEAPEND);
 	}
 #elif defined(HAVE_MALLINFO2)
 	ret = mallinfo2().uordblks;
@@ -551,7 +551,7 @@ TestInitializeLeak(void)
 		CHKBindParameter(1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, intCol, sizeof(SQLINTEGER), lIntCol, "S");
 
 	/* memory should not increase a lot */
-	assert(memory_usage() < initial_memory + 10240);
+	TDS_ASSERT(memory_usage() < initial_memory + 10240);
 
 	odbc_reset_statement();
 
@@ -566,7 +566,7 @@ TestInitializeLeak(void)
 			CHKBindParameter(1, SQL_PARAM_INPUT, SQL_C_DEFAULT, SQL_SS_TABLE, MAX_ROWS, 0, tableName, SQL_NTS, &numRows, "S");
 
 		/* memory should not increase a lot */
-		assert(memory_usage() < initial_memory + 10240);
+		TDS_ASSERT(memory_usage() < initial_memory + 10240);
 
 		odbc_reset_statement();
 	}

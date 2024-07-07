@@ -20,15 +20,7 @@
 /*
  * Purpose: test dlist code.
  */
-#undef NDEBUG
-#include <config.h>
-
-#include <stdio.h>
-#include <assert.h>
-
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
+#include "common.h"
 
 #include <freetds/utils/dlist.h>
 
@@ -53,8 +45,8 @@ main(void)
 	list_init(list);
 	memset(&items, 0, sizeof(items));
 
-	assert(list_first(list) == NULL);
-	assert(list_last(list) == NULL);
+	TDS_ASSERT(list_first(list) == NULL);
+	TDS_ASSERT(list_last(list) == NULL);
 
 	p = &items[0];
 	p->n = 2;
@@ -64,30 +56,30 @@ main(void)
 	p->n = 1;
 	list_prepend(list, p++);
 
-	assert(!list_in_list(list, p));
-	assert(list_first(list)->n == 1);
-	assert(list_last(list)->n == 3);
+	TDS_ASSERT(!list_in_list(list, p));
+	TDS_ASSERT(list_first(list)->n == 1);
+	TDS_ASSERT(list_last(list)->n == 3);
 
 	/* check sequence is [1, 2, 3] */
 	n = 0;
 	DLIST_FOREACH(list, list, p) {
-		assert(p->n == ++n);
+		TDS_ASSERT(p->n == ++n);
 	}
-	assert(n == 3);
+	TDS_ASSERT(n == 3);
 
 	/* remove item with n == 2, sequence will be [1, 3] */
-	assert(list_in_list(list, &items[0]));
+	TDS_ASSERT(list_in_list(list, &items[0]));
 	list_remove(list, &items[0]);
-	assert(!list_in_list(list, &items[0]));
+	TDS_ASSERT(!list_in_list(list, &items[0]));
 
 	/* change sequence to [1, 2] */
 	items[1].n = 2;
 
 	n = 0;
 	DLIST_FOREACH(list, list, p) {
-		assert(p->n == ++n);
+		TDS_ASSERT(p->n == ++n);
 	}
-	assert(n == 2);
+	TDS_ASSERT(n == 2);
 
 	return 0;
 }

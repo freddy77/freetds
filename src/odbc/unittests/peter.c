@@ -23,7 +23,7 @@ main(void)
 	CHKPrepare(T("SELECT * FROM #tester WHERE id = ?"), SQL_NTS, "S");
 
 	CHKNumParams(&num_params, "S");
-	assert(num_params == 1);
+	TDS_ASSERT(num_params == 1);
 
 	id = 1;
 	CHKBindParameter(1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, &id, sizeof(id), NULL, "S");
@@ -35,7 +35,7 @@ main(void)
 	CHKRowCount(&count, "S");
 
 	CHKNumResultCols(&cols, "S");
-	assert(cols == 2);
+	TDS_ASSERT(cols == 2);
 
 	odbc_disconnect();
 	return 0;

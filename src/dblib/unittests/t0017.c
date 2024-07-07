@@ -47,7 +47,7 @@ main(int argc, char *argv[])
 	printf("About to logon ... ");
 
 	login = dblogin();
-	assert(login);
+	TDS_ASSERT(login);
 	BCP_SETL(login, TRUE);
 	DBSETLPWD(login, PASSWORD);
 	DBSETLUSER(login, USER);
@@ -56,7 +56,7 @@ main(int argc, char *argv[])
 
 	printf("Opening \"%s\" for \"%s\" ... ", SERVER, USER);
 	dbproc = dbopen(login, SERVER);
-	assert(dbproc);
+	TDS_ASSERT(dbproc);
 	if (strlen(DATABASE)) {
 		dbuse(dbproc, DATABASE);
 	}

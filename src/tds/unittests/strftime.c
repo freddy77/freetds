@@ -31,7 +31,7 @@ test(const TDSDATEREC* dr, int prec, const char *fmt, const char *expected, int 
 {
 	char out[256];
 	char *format = strdup(fmt);
-	assert(format != NULL);
+	TDS_ASSERT(format != NULL);
 
 	tds_strftime(out, sizeof(out), format, dr, prec);
 

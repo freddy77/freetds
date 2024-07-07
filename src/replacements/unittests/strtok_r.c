@@ -19,15 +19,7 @@
 
 #define TDS_INTERNAL_TEST 1
 
-#include <config.h>
-
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#if HAVE_STRING_H
-#include <string.h>
-#endif /* HAVE_STRING_H */
+#include "common.h"
 
 #include <freetds/replacements.h>
 

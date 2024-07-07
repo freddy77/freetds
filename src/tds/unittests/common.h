@@ -22,6 +22,8 @@
 #define FREETDS_SRCDIR FREETDS_TOPDIR "/src/tds/unittests"
 #endif
 
+#define TDS_ASSERT assert
+
 extern char PASSWORD[512];
 extern char USER[512];
 extern char SERVER[512];

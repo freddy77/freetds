@@ -1,6 +1,6 @@
-/* 
+/*
  * Purpose: Test bcp functions
- * Functions: bcp_batch bcp_bind bcp_done bcp_init bcp_sendrow 
+ * Functions: bcp_batch bcp_bind bcp_done bcp_init bcp_sendrow
  */
 
 #include "common.h"
@@ -92,72 +92,72 @@ test_bind(DBPROCESS * dbproc)
 
 	/* non nulls */
 	fOK = INT_BIND(not_null_bit);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 
 	fOK = VARCHAR_BIND(not_null_char);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = VARCHAR_BIND(not_null_varchar);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 
 	fOK = VARCHAR_BIND(not_null_datetime);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = VARCHAR_BIND(not_null_smalldatetime);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 
 	fOK = VARCHAR_BIND(not_null_money);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = VARCHAR_BIND(not_null_smallmoney);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 
 	fOK = VARCHAR_BIND(not_null_float);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = VARCHAR_BIND(not_null_real);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 
 	fOK = VARCHAR_BIND(not_null_decimal);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = VARCHAR_BIND(not_null_numeric);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 
 	fOK = INT_BIND(not_null_int);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = INT_BIND(not_null_smallint);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = INT_BIND(not_null_tinyint);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 
 	/* nulls */
 	fOK = NULL_BIND(not_null_char, SYBVARCHAR);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = NULL_BIND(not_null_varchar, SYBVARCHAR);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 
 	fOK = NULL_BIND(not_null_datetime, SYBVARCHAR);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = NULL_BIND(not_null_smalldatetime, SYBVARCHAR);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 
 	fOK = NULL_BIND(not_null_money, SYBVARCHAR);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = NULL_BIND(not_null_smallmoney, SYBVARCHAR);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 
 	fOK = NULL_BIND(not_null_float, SYBVARCHAR);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = NULL_BIND(not_null_real, SYBVARCHAR);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 
 	fOK = NULL_BIND(not_null_decimal, SYBVARCHAR);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = NULL_BIND(not_null_numeric, SYBVARCHAR);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 
 	fOK = NULL_BIND(not_null_int, SYBINT4);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = NULL_BIND(not_null_smallint, SYBINT4);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = NULL_BIND(not_null_tinyint, SYBINT4);
-	assert(fOK == SUCCEED); 
+	TDS_ASSERT(fOK == SUCCEED);
 
 }
 
