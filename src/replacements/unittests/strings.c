@@ -17,16 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#undef NDEBUG
-#include <config.h>
-
-#include <stdio.h>
-
-#if HAVE_STDLIB_H
-#include <stdlib.h>
-#endif /* HAVE_STDLIB_H */
-
-#include <assert.h>
+#include "common.h"
 
 #include <freetds/replacements.h>
 
@@ -49,52 +40,52 @@ int main(void)
 
 	/* test tds_strlcpy */
 	memset(buf, 0xff, 10);
-	assert(tds_strlcpy(buf, "test", 10) == 4);
-	assert(strcmp(buf, "test") == 0);
+	TDS_ASSERT(tds_strlcpy(buf, "test", 10) == 4);
+	TDS_ASSERT(strcmp(buf, "test") == 0);
 
 	memset(buf, 0xff, 10);
-	assert(tds_strlcpy(buf, "TESTTEST", 10) == 8);
-	assert(strcmp(buf, "TESTTEST") == 0);
+	TDS_ASSERT(tds_strlcpy(buf, "TESTTEST", 10) == 8);
+	TDS_ASSERT(strcmp(buf, "TESTTEST") == 0);
 
 	memset(buf, 0xff, 10);
-	assert(tds_strlcpy(buf, "abcdefghi", 10) == 9);
-	assert(strcmp(buf, "abcdefghi") == 0);
+	TDS_ASSERT(tds_strlcpy(buf, "abcdefghi", 10) == 9);
+	TDS_ASSERT(strcmp(buf, "abcdefghi") == 0);
 
 	memset(buf, 0xff, 10);
-	assert(tds_strlcpy(buf, "1234567890", 10) == 10);
-	assert(strcmp(buf, "123456789") == 0);
+	TDS_ASSERT(tds_strlcpy(buf, "1234567890", 10) == 10);
+	TDS_ASSERT(strcmp(buf, "123456789") == 0);
 
 	memset(buf, 0xff, 10);
-	assert(tds_strlcpy(buf, "xyzabc1234567890", 10) == 16);
-	assert(strcmp(buf, "xyzabc123") == 0);
+	TDS_ASSERT(tds_strlcpy(buf, "xyzabc1234567890", 10) == 16);
+	TDS_ASSERT(strcmp(buf, "xyzabc123") == 0);
 
 	/* test tds_strlcat */
 	strcpy(buf, "xyz");
-	assert(tds_strlcat(buf, "test", 10) == 7);
-	assert(strcmp(buf, "xyztest") == 0);
+	TDS_ASSERT(tds_strlcat(buf, "test", 10) == 7);
+	TDS_ASSERT(strcmp(buf, "xyztest") == 0);
 
 	strcpy(buf, "xyz");
-	assert(tds_strlcat(buf, "TESTAB", 10) == 9);
-	assert(strcmp(buf, "xyzTESTAB") == 0);
+	TDS_ASSERT(tds_strlcat(buf, "TESTAB", 10) == 9);
+	TDS_ASSERT(strcmp(buf, "xyzTESTAB") == 0);
 
 	strcpy(buf, "xyz");
-	assert(tds_strlcat(buf, "TESTabc", 10) == 10);
-	assert(strcmp(buf, "xyzTESTab") == 0);
+	TDS_ASSERT(tds_strlcat(buf, "TESTabc", 10) == 10);
+	TDS_ASSERT(strcmp(buf, "xyzTESTab") == 0);
 
 	strcpy(buf, "xyz");
-	assert(tds_strlcat(buf, "123456789012345", 10) == 18);
-	assert(strcmp(buf, "xyz123456") == 0);
+	TDS_ASSERT(tds_strlcat(buf, "123456789012345", 10) == 18);
+	TDS_ASSERT(strcmp(buf, "xyz123456") == 0);
 
 	strcpy(buf, "123456789");
-	assert(tds_strlcat(buf, "test", 4) == 13);
-	assert(strcmp(buf, "123456789") == 0);
+	TDS_ASSERT(tds_strlcat(buf, "test", 4) == 13);
+	TDS_ASSERT(strcmp(buf, "123456789") == 0);
 
 	/* test length == 0 */
-	assert(tds_strlcpy(buf + 10, "test", 0) == 4);
+	TDS_ASSERT(tds_strlcpy(buf + 10, "test", 0) == 4);
 
 	strcpy(buf, "123");
-	assert(tds_strlcat(buf, "456", 0) == 6);
-	assert(strcmp(buf, "123") == 0);
+	TDS_ASSERT(tds_strlcat(buf, "456", 0) == 6);
+	TDS_ASSERT(strcmp(buf, "123") == 0);
 
 	free(buf);
 	return 0;

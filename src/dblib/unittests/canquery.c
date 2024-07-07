@@ -43,7 +43,7 @@ main(int argc, char **argv)
 	printf("Using database \"%s\"\n", DATABASE);
 	if (strlen(DATABASE)) {
 		erc = dbuse(dbproc, DATABASE);
-		assert(erc == SUCCEED);
+		TDS_ASSERT(erc == SUCCEED);
 	}
 
 	sql_cmd(dbproc);

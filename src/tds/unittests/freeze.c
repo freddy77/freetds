@@ -52,7 +52,7 @@ buf_append(buffer *buf, const void *data, size_t data_len)
 		buf->capacity *= 2;
 		if (buf->capacity < min_size)
 			buf->capacity = min_size;
-		assert(TDS_RESIZE(buf->buf, buf->capacity) != NULL);
+		TDS_ASSERT(TDS_RESIZE(buf->buf, buf->capacity) != NULL);
 	}
 	memcpy(buf->buf + buf->len, data, data_len);
 	buf->len += data_len;
@@ -124,28 +124,28 @@ strip_headers(buffer *buf)
 	while (p < end) {
 		size_t len;
 
-		assert(final == 0);
+		TDS_ASSERT(final == 0);
 		if (p[0] == TDS72_SMP) {
-			assert(end - p >= 8); /* to read SMP part */
+			TDS_ASSERT(end - p >= 8); /* to read SMP part */
 			len = TDS_GET_UA4LE(p+4);
-			assert(len >= 16);
-			assert(p + len <= end);
+			TDS_ASSERT(len >= 16);
+			TDS_ASSERT(p + len <= end);
 			p += 16;
 			len -= 16;
-			assert(end - p >= 4); /* to read TDS header part */
-			assert(len == TDS_GET_UA2BE(p+2));
+			TDS_ASSERT(end - p >= 4); /* to read TDS header part */
+			TDS_ASSERT(len == TDS_GET_UA2BE(p+2));
 		} else {
-			assert(end - p >= 4); /* to read TDS header part */
+			TDS_ASSERT(end - p >= 4); /* to read TDS header part */
 			len = TDS_GET_UA2BE(p+2);
 		}
-		assert(len > 8);
-		assert(p + len <= end);
+		TDS_ASSERT(len > 8);
+		TDS_ASSERT(p + len <= end);
 		final = p[1];
 		memmove(dst, p + 8, len - 8);
 		dst += len - 8;
 		p += len;
 	}
-	assert(final == 1 || was_shutdown);
+	TDS_ASSERT(final == 1 || was_shutdown);
 	buf->len = dst - buf->buf;
 }
 
@@ -159,7 +159,7 @@ append(const void *data, size_t size)
 	uint8_t rand_buf[2048];
 	if (!data) {
 		size_t n;
-		assert(size <= sizeof(rand_buf));
+		TDS_ASSERT(size <= sizeof(rand_buf));
 		for (n = 0; n < size; ++n)
 			rand_buf[n] = rand();
 		data = rand_buf;
@@ -175,12 +175,12 @@ append_num(uint64_t num, unsigned size)
 	uint8_t num_buf[8];
 	unsigned n;
 
-	assert(size == 1 || size == 2 || size == 4 || size == 8);
+	TDS_ASSERT(size == 1 || size == 2 || size == 4 || size == 8);
 	for (n = 0; n < size; ++n) {
 		num_buf[n] = num & 0xff;
 		num >>= 8;
 	}
-	assert(num == 0);
+	TDS_ASSERT(num == 0);
 	buf_append(&buf, num_buf, size);
 }
 
@@ -203,43 +203,43 @@ test1(void)
 	tds_freeze(tds, &outer, 2);
 	append_num(3, 2);
 	append("a\0b\0c", 6);
-	assert(tds_freeze_written(&outer) == 8);
+	TDS_ASSERT(tds_freeze_written(&outer) == 8);
 	written = tds_freeze_written(&outer) / 2 - 1;
 	tds_freeze_close_len(&outer, written);
 
 	/* nested freeze */
 	tds_freeze(tds, &outer, 0);
-	assert(tds_freeze_written(&outer) == 0);
+	TDS_ASSERT(tds_freeze_written(&outer) == 0);
 	append("test", 4);
 	tds_freeze(tds, &inner, 0);
-	assert(tds_freeze_written(&outer) == 4);
-	assert(tds_freeze_written(&inner) == 0);
+	TDS_ASSERT(tds_freeze_written(&outer) == 4);
+	TDS_ASSERT(tds_freeze_written(&inner) == 0);
 	tds_put_smallint(tds, 1234);
 	append_num(1234, 2);
 	append("test", 4);
-	assert(tds_freeze_written(&outer) == 10);
-	assert(tds_freeze_written(&inner) == 6);
+	TDS_ASSERT(tds_freeze_written(&outer) == 10);
+	TDS_ASSERT(tds_freeze_written(&inner) == 6);
 	append(NULL, 600 - 5);
 	append("hello", 5);
 	tdsdump_log(TDS_DBG_INFO2, "%u\n", (unsigned) tds_freeze_written(&outer));
-	assert(tds_freeze_written(&outer) == 610);
-	assert(tds_freeze_written(&inner) == 606);
+	TDS_ASSERT(tds_freeze_written(&outer) == 610);
+	TDS_ASSERT(tds_freeze_written(&inner) == 606);
 
 	/* check values do not change before and after close */
 	tds_freeze_close(&inner);
-	assert(tds_freeze_written(&outer) == 610);
+	TDS_ASSERT(tds_freeze_written(&outer) == 610);
 
 	/* test wrapping packets */
 	append(NULL, 600 - 5);
 	append("hello", 5);
 	tdsdump_log(TDS_DBG_INFO2, "%u\n", (unsigned) tds_freeze_written(&outer));
-	assert(tds_freeze_written(&outer) == 610 + 600);
+	TDS_ASSERT(tds_freeze_written(&outer) == 610 + 600);
 
 	/* append data in the additional part to check it */
 	left = tds->out_buf_max - tds->out_pos;
 	append(NULL, left - 3);
 	tds_put_int(tds, 0x12345678);
-	assert(tds->out_pos > tds->out_buf_max);
+	TDS_ASSERT(tds->out_pos > tds->out_buf_max);
 	append_num(0x12345678, 4);
 
 	tds_freeze_close(&outer);
@@ -413,12 +413,12 @@ test(int mars, void (*real_test)(void))
 #endif
 
 	ctx = tds_alloc_context(NULL);
-	assert(ctx);
+	TDS_ASSERT(ctx);
 	tds = tds_alloc_socket(ctx, 512);
-	assert(tds);
+	TDS_ASSERT(tds);
 
 	/* provide connection to a fake remove server */
-	assert(socketpair(AF_UNIX, SOCK_STREAM, 0, sockets) >= 0);
+	TDS_ASSERT(socketpair(AF_UNIX, SOCK_STREAM, 0, sockets) >= 0);
 	tds_socket_set_nosigpipe(sockets[0], 1);
 	was_shutdown = false;
 	tds->state = TDS_IDLE;
@@ -433,7 +433,7 @@ test(int mars, void (*real_test)(void))
 #if ENABLE_ODBC_MARS
 	if (mars) {
 		tds->conn->mars = 1;
-		assert(tds_realloc_socket(tds, tds->out_buf_max));
+		TDS_ASSERT(tds_realloc_socket(tds, tds->out_buf_max));
 		tds_init_write_buf(tds);
 	}
 #endif
@@ -450,8 +450,8 @@ test(int mars, void (*real_test)(void))
 
 	strip_headers(&thread_buf);
 	tdsdump_dump_buf(TDS_DBG_INFO1, "thread buffer", thread_buf.buf, thread_buf.len);
-	assert(buf.len == thread_buf.len);
-	assert(memcmp(buf.buf, thread_buf.buf, buf.len) == 0);
+	TDS_ASSERT(buf.len == thread_buf.len);
+	TDS_ASSERT(memcmp(buf.buf, thread_buf.buf, buf.len) == 0);
 
 	tds_free_socket(tds);
 	tds = NULL;

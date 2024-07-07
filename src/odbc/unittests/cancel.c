@@ -92,13 +92,13 @@ alarm(unsigned int timeout)
 	/* create an event to stop the alarm thread */
 	if (alarm_cond == NULL) {
 		alarm_cond = CreateEvent(NULL, TRUE, FALSE, NULL);
-		assert(alarm_cond != NULL);
+		TDS_ASSERT(alarm_cond != NULL);
 	}
 
 	/* stop old alarm */
 	if (thread) {
 		SetEvent(alarm_cond);
-		assert(WaitForSingleObject(thread, INFINITE) == WAIT_OBJECT_0);
+		TDS_ASSERT(WaitForSingleObject(thread, INFINITE) == WAIT_OBJECT_0);
 		CloseHandle(thread);
 		thread = NULL;
 	}
@@ -108,7 +108,7 @@ alarm(unsigned int timeout)
 
 		/* start alarm thread */
 		thread = CreateThread(NULL, 0, alarm_thread_proc, (LPVOID) (uintptr_t) timeout, 0, NULL);
-		assert(thread);
+		TDS_ASSERT(thread);
 	}
 }
 #endif

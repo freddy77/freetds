@@ -159,77 +159,77 @@ test_bind(int prefixlen)
 
 	/* non nulls */
 	fOK = INT_BIND(not_null_bit);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 
 	fOK = VARCHAR_BIND(not_null_char);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = VARCHAR_BIND(not_null_varchar);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 
 	fOK = VARCHAR_BIND(not_null_datetime);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = VARCHAR_BIND(not_null_smalldatetime);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 
 	fOK = VARCHAR_BIND(not_null_money);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = VARCHAR_BIND(not_null_smallmoney);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 
 	fOK = VARCHAR_BIND(not_null_float);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = VARCHAR_BIND(not_null_real);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 
 	fOK = VARCHAR_BIND(not_null_decimal);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = VARCHAR_BIND(not_null_numeric);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 
 	fOK = INT_BIND(not_null_int);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = INT_BIND(not_null_smallint);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = INT_BIND(not_null_tinyint);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = VARCHAR_BIND(not_null_nvarchar);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 
 	/* nulls */
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = NULL_BIND(not_null_char, BCP_TYPE_SQLVARCHAR);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = NULL_BIND(not_null_varchar, BCP_TYPE_SQLVARCHAR);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 
 	fOK = NULL_BIND(not_null_datetime, BCP_TYPE_SQLVARCHAR);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = NULL_BIND(not_null_smalldatetime, BCP_TYPE_SQLVARCHAR);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 
 	fOK = NULL_BIND(not_null_money, BCP_TYPE_SQLVARCHAR);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = NULL_BIND(not_null_smallmoney, BCP_TYPE_SQLVARCHAR);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 
 	fOK = NULL_BIND(not_null_float, BCP_TYPE_SQLVARCHAR);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = NULL_BIND(not_null_real, BCP_TYPE_SQLVARCHAR);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 
 	fOK = NULL_BIND(not_null_decimal, BCP_TYPE_SQLVARCHAR);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = NULL_BIND(not_null_numeric, BCP_TYPE_SQLVARCHAR);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 
 	fOK = NULL_BIND(not_null_int, BCP_TYPE_SQLINT4);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = NULL_BIND(not_null_smallint, BCP_TYPE_SQLINT4);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = NULL_BIND(not_null_tinyint, BCP_TYPE_SQLINT4);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 	fOK = NULL_BIND(not_null_nvarchar, BCP_TYPE_SQLVARCHAR);
-	assert(fOK == SUCCEED);
+	TDS_ASSERT(fOK == SUCCEED);
 
 }
 

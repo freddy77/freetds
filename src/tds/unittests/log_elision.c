@@ -91,12 +91,12 @@ main(void)
 	}
 	for (i = 1; i < THREADS; ++i) {
 		ret = tds_thread_create(&threads[i], log_func, TDS_INT2PTR(i));
-		assert(ret == 0);
+		TDS_ASSERT(ret == 0);
 	}
 	log_func(TDS_INT2PTR(0));
 	for (i = 1; i < THREADS; ++i) {
 		ret = tds_thread_join(threads[i], NULL);
-		assert(ret == 0);
+		TDS_ASSERT(ret == 0);
 	}
 
 	/* close logs */
@@ -104,7 +104,7 @@ main(void)
 
 	/* open logs to read */
 	f = fopen("log_elision.out", "r");
-	assert(f != NULL);
+	TDS_ASSERT(f != NULL);
 
 	/* read line by line */
 	while (fgets(line, sizeof(line), f) != NULL) {
@@ -113,20 +113,20 @@ main(void)
 
 		/* ignore some start lines */
 		if (strstr(line, "log_elision.c") == NULL) {
-			assert(++wrong_lines < 4);
+			TDS_ASSERT(++wrong_lines < 4);
 			continue;
 		}
 
 		ret = sscanf(line, "log_elision.c:%d:Some log from %c number %d\n",
 			     &num_line, &thread_letter, &num);
-		assert(ret == 3);
+		TDS_ASSERT(ret == 3);
 
 		/* detect number of thread */
-		assert(thread_letter >= 'A' && thread_letter < 'A' + THREADS);
+		TDS_ASSERT(thread_letter >= 'A' && thread_letter < 'A' + THREADS);
 		idx = thread_letter - 'A';
 
 		/* check number inside string match the next */
-		assert(num == nexts[idx]);
+		TDS_ASSERT(num == nexts[idx]);
 		nexts[idx] += 3;
 	}
 	fclose(f);
@@ -134,7 +134,7 @@ main(void)
 
 	/* check we got all numbers */
 	for (i = 0; i < THREADS; ++i) {
-		assert(nexts[i] == i + LOOP * 3);
+		TDS_ASSERT(nexts[i] == i + LOOP * 3);
 	}
 
 	/* cleanup file */

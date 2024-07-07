@@ -20,19 +20,7 @@
 /* 
  * Purpose: test challenge code.
  */
-#undef NDEBUG
-#include <config.h>
-
-#include <stdio.h>
-#include <assert.h>
-
-#if HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
+#include "common.h"
 
 #include "tds_sysdep_public.h"
 #include <freetds/sysdep_private.h>
@@ -61,7 +49,7 @@ md4(const char *src, const char *out)
 	unsigned char digest[16];
 	char s_digest[34];
 
-	assert(strlen(out) == 32);
+	TDS_ASSERT(strlen(out) == 32);
 	MD4Init(&ctx);
 	if (strlen(src) > 12) {
 		MD4Update(&ctx, (const unsigned char *) src, 5);
@@ -96,7 +84,7 @@ md5(const char *src, const char *out)
 	unsigned char digest[16];
 	char s_digest[34];
 
-	assert(strlen(out) == 32);
+	TDS_ASSERT(strlen(out) == 32);
 	MD5Init(&ctx);
 	if (strlen(src) > 12) {
 		MD5Update(&ctx, (const unsigned char *) src, 5);
@@ -128,7 +116,7 @@ hmac5(const char *src, const char *out)
 	unsigned char digest[16];
 	char s_digest[34];
 
-	assert(strlen(out) == 32 && hmac5_key);
+	TDS_ASSERT(strlen(out) == 32 && hmac5_key);
 	hmac_md5((const unsigned char*) hmac5_key, (const unsigned char*) src, strlen(src), digest);
 	if (strcasecmp(bin2ascii(s_digest, digest, 16), out) != 0) {
 		fprintf(stderr, "Wrong hman md5(%s) -> %s expected %s\n", src, s_digest, out);

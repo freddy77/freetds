@@ -64,15 +64,15 @@ main(int argc, char *argv[])
 	}
 
 	check_call(ct_res_info, (cmd, CS_NUMDATA, &num_cols, CS_UNUSED, NULL));
-	assert(num_cols == 1);
+	TDS_ASSERT(num_cols == 1);
 
 	check_call(ct_describe, (cmd, 1, &datafmt));
 
-	assert(strcmp(datafmt.name, "name") == 0);
-	assert(datafmt.datatype == CS_LONGCHAR_TYPE);
-	assert(datafmt.maxlength == 0x7fffffff);
-	assert(datafmt.scale == 0);
-	assert(datafmt.precision == 0);
+	TDS_ASSERT(strcmp(datafmt.name, "name") == 0);
+	TDS_ASSERT(datafmt.datatype == CS_LONGCHAR_TYPE);
+	TDS_ASSERT(datafmt.maxlength == 0x7fffffff);
+	TDS_ASSERT(datafmt.scale == 0);
+	TDS_ASSERT(datafmt.precision == 0);
 
 	datafmt.format = CS_FMT_NULLTERM;
 	datafmt.maxlength = 100;
@@ -86,13 +86,13 @@ main(int argc, char *argv[])
 		buffer[copied] = '\0';
 		fprintf(stderr, "copied %d bytes: [%s]\n", copied, buffer);
 	}
-	assert(ret == CS_END_DATA);
+	TDS_ASSERT(ret == CS_END_DATA);
 
 	do {
 		ret = ct_results(cmd, &result_type);
 	} while (ret == CS_SUCCEED);
 
-	assert(ret == CS_END_RESULTS);
+	TDS_ASSERT(ret == CS_END_RESULTS);
 
 	if (verbose) {
 		printf("Trying logout\n");

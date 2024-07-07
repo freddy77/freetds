@@ -22,10 +22,10 @@ test_type(TDSSOCKET *tds TDS_UNUSED, TDSCOLUMN *col)
 	memset(&drec, 0, sizeof(drec));
 	odbc_set_sql_type_info(col, &drec, SQL_OV_ODBC3);
 
-	assert(drec.sql_desc_literal_prefix);
-	assert(drec.sql_desc_literal_suffix);
-	assert(drec.sql_desc_type_name);
-	assert(drec.sql_desc_type_name[0]);
+	TDS_ASSERT(drec.sql_desc_literal_prefix);
+	TDS_ASSERT(drec.sql_desc_literal_suffix);
+	TDS_ASSERT(drec.sql_desc_type_name);
+	TDS_ASSERT(drec.sql_desc_type_name[0]);
 
 	/* check we can attempt to convert from any type to any
 	 * SQL C type */
@@ -45,7 +45,7 @@ test_type(TDSSOCKET *tds TDS_UNUSED, TDSCOLUMN *col)
 		}
 
 		params = tds_alloc_param_result(NULL);
-		assert(params);
+		TDS_ASSERT(params);
 
 		/* convert back to server */
 		memset(&drec_ixd, 0, sizeof(drec_ixd));
@@ -69,11 +69,11 @@ main(void)
 
 	/* extract all C types we support */
 	for (i = -200; i <= 200; ++i) {
-		assert(num_c_types < 100);
+		TDS_ASSERT(num_c_types < 100);
 		if (odbc_c_to_server_type(i) != TDS_INVALID_TYPE) {
 			sql_c_types[num_c_types] = i;
 			sql_c_types_names[num_c_types] = odbc_lookup_value(i, odbc_sql_c_types, NULL);
-			assert(sql_c_types_names[num_c_types] != NULL);
+			TDS_ASSERT(sql_c_types_names[num_c_types] != NULL);
 			num_c_types++;
 		}
 	}
@@ -91,12 +91,12 @@ main(void)
 	dbc = (TDS_DBC *) (TDS_UINTPTR) ulen;
 	CHKGetInfo(SQL_DRIVER_HENV, &ulen, sizeof(ulen), NULL, "S");
 	env = (TDS_ENV *) (TDS_UINTPTR) ulen;
-	assert(dbc && env);
-	assert(env->tds_ctx);
+	TDS_ASSERT(dbc && env);
+	TDS_ASSERT(env->tds_ctx);
 
-	assert(!dbc->tds_socket);
+	TDS_ASSERT(!dbc->tds_socket);
 	dbc->tds_socket = tds_alloc_socket(env->tds_ctx, 512);
-	assert(dbc->tds_socket);
+	TDS_ASSERT(dbc->tds_socket);
 	dbc->tds_socket->conn->use_iconv = 0;
 	tds_set_parent(dbc->tds_socket, dbc);
 	if (TDS_FAILED(tds_iconv_open(dbc->tds_socket->conn, "UTF-8", 1))) {
@@ -105,9 +105,9 @@ main(void)
 	}
 
 	/* get one statement to test with */
-	assert(dbc->stmt_list == NULL);
+	TDS_ASSERT(dbc->stmt_list == NULL);
 	CHKAllocStmt(&odbc_stmt, "S");
-	assert(dbc->stmt_list);
+	TDS_ASSERT(dbc->stmt_list);
 	stmt = dbc->stmt_list;
 
 	tds_all_types(dbc->tds_socket, test_type);

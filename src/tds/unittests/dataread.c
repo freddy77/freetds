@@ -82,7 +82,7 @@ test0(const char *type, ...)
 	}
         va_end(ap);
 
-	assert(num_data > 0);
+	TDS_ASSERT(num_data > 0);
 
 	/* execute it */
 	rc = tds_submit_query(tds, "SELECT * FROM #tmp");
@@ -118,7 +118,7 @@ test0(const char *type, ...)
 		TDS_CHAR *src = (TDS_CHAR *) curcol->column_data;
 		int conv_type = tds_get_conversion_type(curcol->column_type, curcol->column_size);
 
-		assert(i_row < num_data);
+		TDS_ASSERT(i_row < num_data);
 
 		if (is_blob_col(curcol) && curcol->column_type != SYBVARIANT) {
 			TDSBLOB *blob = (TDSBLOB *) src;

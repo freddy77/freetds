@@ -64,7 +64,7 @@ main(int argc, char **argv)
 	printf("Using database \"%s\"\n", DATABASE);
 	if (strlen(DATABASE)) {
 		erc = dbuse(dbproc, DATABASE);
-		assert(erc == SUCCEED);
+		TDS_ASSERT(erc == SUCCEED);
 	}
 
 	sql_cmd(dbproc);
@@ -99,9 +99,9 @@ main(int argc, char **argv)
 	printf("COLCOUNT: %d\n\n", colcount);
 
 	/* check that the results correspond to the create table statement */
-	assert(results_retcode == SUCCEED);
-	assert(rowcount == -1);
-	assert(colcount == 0);
+	TDS_ASSERT(results_retcode == SUCCEED);
+	TDS_ASSERT(rowcount == -1);
+	TDS_ASSERT(colcount == 0);
 
 	/* now simulate calling nextRowset() for each remaining statement in our batch */
 
@@ -113,7 +113,7 @@ main(int argc, char **argv)
 	/* there shouldn't be any rows in this resultset yet, it's still from the CREATE TABLE */
 	row_retcode = dbnextrow(dbproc);
 	printf("dbnextrow retcode: %d\n", results_retcode);
-	assert(row_retcode == NO_MORE_ROWS);
+	TDS_ASSERT(row_retcode == NO_MORE_ROWS);
 
 	results_retcode = dbresults(dbproc);
 	rowcount = DBCOUNT(dbproc);
@@ -123,9 +123,9 @@ main(int argc, char **argv)
 	printf("ROWCOUNT: %d\n", rowcount);
 	printf("COLCOUNT: %d\n\n", colcount);
 
-	assert(results_retcode == SUCCEED);
-	assert(rowcount == 3);
-	assert(colcount == 0);
+	TDS_ASSERT(results_retcode == SUCCEED);
+	TDS_ASSERT(rowcount == 3);
+	TDS_ASSERT(colcount == 0);
 
 	/*
 	 * SELECT
@@ -135,7 +135,7 @@ main(int argc, char **argv)
 	/* the rowset is still from the INSERT and should have no rows */
 	row_retcode = dbnextrow(dbproc);
 	printf("dbnextrow retcode: %d\n", results_retcode);
-	assert(row_retcode == NO_MORE_ROWS);
+	TDS_ASSERT(row_retcode == NO_MORE_ROWS);
 
 	results_retcode = dbresults(dbproc);
 	rowcount = DBCOUNT(dbproc);
@@ -145,20 +145,20 @@ main(int argc, char **argv)
 	printf("ROWCOUNT: %d\n", rowcount);
 	printf("COLCOUNT: %d\n\n", colcount);
 
-	assert(results_retcode == SUCCEED);
-	assert(rowcount == -1);
-	assert(colcount == 1);
+	TDS_ASSERT(results_retcode == SUCCEED);
+	TDS_ASSERT(rowcount == -1);
+	TDS_ASSERT(colcount == 1);
 
 	/* now we expect to find three rows in the rowset */
 	row_retcode = dbnextrow(dbproc);
 	printf("dbnextrow retcode: %d\n", row_retcode);
-	assert(row_retcode == REG_ROW);
+	TDS_ASSERT(row_retcode == REG_ROW);
 	row_retcode = dbnextrow(dbproc);
 	printf("dbnextrow retcode: %d\n", row_retcode);
-	assert(row_retcode == REG_ROW);
+	TDS_ASSERT(row_retcode == REG_ROW);
 	row_retcode = dbnextrow(dbproc);
 	printf("dbnextrow retcode: %d\n\n", row_retcode);
-	assert(row_retcode == REG_ROW);
+	TDS_ASSERT(row_retcode == REG_ROW);
 
 	/*
 	 * UPDATE
@@ -168,7 +168,7 @@ main(int argc, char **argv)
 	/* check that there are no rows left, then we'll get the results from the UPDATE */
 	row_retcode = dbnextrow(dbproc);
 	printf("dbnextrow retcode: %d\n", row_retcode);
-	assert(row_retcode == NO_MORE_ROWS);
+	TDS_ASSERT(row_retcode == NO_MORE_ROWS);
 
 	results_retcode = dbresults(dbproc);
 	rowcount = DBCOUNT(dbproc);
@@ -178,9 +178,9 @@ main(int argc, char **argv)
 	printf("ROWCOUNT: %d\n", rowcount);
 	printf("COLCOUNT: %d\n\n", colcount);
 
-	assert(results_retcode == SUCCEED);
-	assert(rowcount == 3);
-	/*assert(colcount == 0); TODO: why does an update get a column? */
+	TDS_ASSERT(results_retcode == SUCCEED);
+	TDS_ASSERT(rowcount == 3);
+	/*TDS_ASSERT(colcount == 0); TODO: why does an update get a column? */
 
 	/*
 	 * SELECT
@@ -189,7 +189,7 @@ main(int argc, char **argv)
 
 	row_retcode = dbnextrow(dbproc);
 	printf("dbnextrow retcode: %d\n", row_retcode);
-	assert(row_retcode == NO_MORE_ROWS);
+	TDS_ASSERT(row_retcode == NO_MORE_ROWS);
 
 	results_retcode = dbresults(dbproc);
 	rowcount = DBCOUNT(dbproc);
@@ -199,20 +199,20 @@ main(int argc, char **argv)
 	printf("ROWCOUNT: %d\n", rowcount);
 	printf("COLCOUNT: %d\n\n", colcount);
 
-	assert(results_retcode == SUCCEED);
-	assert(rowcount == -1);
-	assert(colcount == 1);
+	TDS_ASSERT(results_retcode == SUCCEED);
+	TDS_ASSERT(rowcount == -1);
+	TDS_ASSERT(colcount == 1);
 
 	/* now we expect to find three rows in the rowset again */
 	row_retcode = dbnextrow(dbproc);
 	printf("dbnextrow retcode: %d\n", row_retcode);
-	assert(row_retcode == REG_ROW);
+	TDS_ASSERT(row_retcode == REG_ROW);
 	row_retcode = dbnextrow(dbproc);
 	printf("dbnextrow retcode: %d\n", row_retcode);
-	assert(row_retcode == REG_ROW);
+	TDS_ASSERT(row_retcode == REG_ROW);
 	row_retcode = dbnextrow(dbproc);
 	printf("dbnextrow retcode: %d\n\n", row_retcode);
-	assert(row_retcode == REG_ROW);
+	TDS_ASSERT(row_retcode == REG_ROW);
 
 	/*
 	 * DROP
@@ -221,7 +221,7 @@ main(int argc, char **argv)
 
 	row_retcode = dbnextrow(dbproc);
 	printf("dbnextrow retcode: %d\n", row_retcode);
-	assert(row_retcode == NO_MORE_ROWS);
+	TDS_ASSERT(row_retcode == NO_MORE_ROWS);
 
 	results_retcode = dbresults(dbproc);
 	rowcount = DBCOUNT(dbproc);
@@ -231,14 +231,14 @@ main(int argc, char **argv)
 	printf("ROWCOUNT: %d\n", rowcount);
 	printf("COLCOUNT: %d\n\n", colcount);
 
-	assert(results_retcode == SUCCEED);
-	assert(rowcount == -1);
-	/* assert(colcount == 0); */
+	TDS_ASSERT(results_retcode == SUCCEED);
+	TDS_ASSERT(rowcount == -1);
+	/* TDS_ASSERT(colcount == 0); */
 
 	/* Call one more time to be sure we get NO_MORE_RESULTS */
 	row_retcode = dbnextrow(dbproc);
 	printf("dbnextrow retcode: %d\n", row_retcode);
-	assert(row_retcode == NO_MORE_ROWS);
+	TDS_ASSERT(row_retcode == NO_MORE_ROWS);
 
 	results_retcode = dbresults(dbproc);
 	rowcount = DBCOUNT(dbproc);
@@ -248,9 +248,9 @@ main(int argc, char **argv)
 	printf("ROWCOUNT: %d\n", rowcount);
 	printf("COLCOUNT: %d\n\n", colcount);
 
-	assert(results_retcode == NO_MORE_RESULTS);
-	assert(rowcount == -1);
-	/* assert(colcount == 0); */
+	TDS_ASSERT(results_retcode == NO_MORE_RESULTS);
+	TDS_ASSERT(rowcount == -1);
+	/* TDS_ASSERT(colcount == 0); */
 
 	dbexit();
 

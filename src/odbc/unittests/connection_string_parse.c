@@ -6,14 +6,14 @@
 static void
 assert_equal_dstr(DSTR a, const char *b)
 {
-	assert(b && strcmp(tds_dstr_cstr(&a), b)==0);
+	TDS_ASSERT(b && strcmp(tds_dstr_cstr(&a), b)==0);
 }
 
 static void
 assert_equal_str(TDS_PARSED_PARAM param, const char *b)
 {
 	/* printf("param %.*s b %s\n", (int) param.len, param.p, b); */
-	assert(b && strlen(b) == param.len && strncmp(param.p, b, param.len)==0);
+	TDS_ASSERT(b && strlen(b) == param.len && strncmp(param.p, b, param.len)==0);
 }
 
 typedef void check_func_t(TDSLOGIN *login, TDS_PARSED_PARAM *parsed_params);
@@ -76,7 +76,7 @@ CHECK(simple_string,
 	assert_equal_dstr(login->server_name, "127.0.0.1");
 	assert_equal_dstr(login->password, "test_password");
 	assert_equal_str(parsed_params[ODBC_PARAM_PWD], "test_password");
-	assert(login->port == 1337);
+	TDS_ASSERT(login->port == 1337);
 }
 
 CHECK(simple_escaped_string,
@@ -87,7 +87,7 @@ CHECK(simple_escaped_string,
 	assert_equal_dstr(login->server_name, "127.0.0.1");
 	assert_equal_dstr(login->password, "test_password");
 	assert_equal_str(parsed_params[ODBC_PARAM_PWD], "{test_password}");
-	assert(login->port == 1337);
+	TDS_ASSERT(login->port == 1337);
 }
 
 CHECK(test_special_symbols,
@@ -98,7 +98,7 @@ CHECK(test_special_symbols,
 	assert_equal_dstr(login->server_name, "127.0.0.1");
 	assert_equal_dstr(login->password, "[]{}(),;?*=!@");
 	assert_equal_str(parsed_params[ODBC_PARAM_PWD], "{[]{}}(),;?*=!@}");
-	assert(login->port == 1337);
+	TDS_ASSERT(login->port == 1337);
 }
 
 CHECK(password_contains_curly_braces,
@@ -109,7 +109,7 @@ CHECK(password_contains_curly_braces,
 	assert_equal_dstr(login->server_name, "127.0.0.1");
 	assert_equal_dstr(login->password, "test{}_password");
 	assert_equal_str(parsed_params[ODBC_PARAM_PWD], "{test{}}_password}");
-	assert(login->port == 1337);
+	TDS_ASSERT(login->port == 1337);
 }
 
 CHECK(password_contains_curly_braces_and_separator,
@@ -120,7 +120,7 @@ CHECK(password_contains_curly_braces_and_separator,
 	assert_equal_dstr(login->server_name, "127.0.0.1");
 	assert_equal_dstr(login->password, "test{};_password");
 	assert_equal_str(parsed_params[ODBC_PARAM_PWD], "{test{}};_password}");
-	assert(login->port == 1337);
+	TDS_ASSERT(login->port == 1337);
 }
 
 CHECK(password_bug_report,
@@ -130,7 +130,7 @@ CHECK(password_bug_report,
 	assert_equal_dstr(login->server_name, "1.2.3.4");
 	assert_equal_dstr(login->password, "p@ssw0rd");
 	assert_equal_str(parsed_params[ODBC_PARAM_PWD], "{p@ssw0rd}");
-	assert(login->port == 1433);
+	TDS_ASSERT(login->port == 1433);
 }
 
 /* unfinished "pwd", the "Port" before "pwd" is to reveal a leak */

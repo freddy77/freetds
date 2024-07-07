@@ -82,7 +82,7 @@ main(void)
 	odbc_reset_statement();
 
 	/* launch another thread to update the table we are looking to */
-	assert(tds_thread_create(&th, change_thread_proc, NULL) == 0);
+	TDS_ASSERT(tds_thread_create(&th, change_thread_proc, NULL) == 0);
 
 	odbc_command("WAITFOR (RECEIVE * FROM FTDS_Queue)");
 
@@ -126,8 +126,8 @@ main(void)
 
 	odbc_disconnect();
 
-	assert(strstr(message, "Table has changed") != NULL);
-	assert(strstr(message, "info=\"update\"") != NULL);
+	TDS_ASSERT(strstr(message, "Table has changed") != NULL);
+	TDS_ASSERT(strstr(message, "info=\"update\"") != NULL);
 
 	return 0;
 }

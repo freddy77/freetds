@@ -34,7 +34,7 @@ DoTest(
 	char buffer[1024];
 	const char *err = "";
 
-	assert(tolen >= 0);
+	TDS_ASSERT(tolen >= 0);
 
 	memset(&destfmt, 0, sizeof(destfmt));
 	destfmt.datatype = totype;

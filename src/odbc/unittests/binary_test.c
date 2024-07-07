@@ -43,8 +43,8 @@ test_insert(void *buf, SQLLEN buflen)
 	SQLLEN strlen_or_ind;
 	const char *qstr = "insert into " TEST_TABLE_NAME " values (?)";
 
-	assert(odbc_conn);
-	assert(odbc_env);
+	TDS_ASSERT(odbc_conn);
+	TDS_ASSERT(odbc_env);
 
 	/* allocate new statement handle */
 	CHKAllocHandle(SQL_HANDLE_STMT, odbc_conn, &odbc_stmt, "SI");
@@ -73,8 +73,8 @@ test_select(void *buf, SQLINTEGER buflen, SQLLEN * bytes_returned)
 	SQLLEN strlen_or_ind = 0;
 	const char *qstr = "select * from " TEST_TABLE_NAME;
 
-	assert(odbc_conn);
-	assert(odbc_env);
+	TDS_ASSERT(odbc_conn);
+	TDS_ASSERT(odbc_env);
 
 	/* allocate new statement handle */
 	CHKAllocHandle(SQL_HANDLE_STMT, odbc_conn, &odbc_stmt, "SI");

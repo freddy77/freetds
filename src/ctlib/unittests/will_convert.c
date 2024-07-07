@@ -155,10 +155,10 @@ main(void)
 				/* ignore */
 				break;
 			default:
-				assert(0);
+				TDS_ASSERT(0);
 			}
 			++expected;
-			assert(*expected == 0 || *expected == ' ');
+			TDS_ASSERT(*expected == 0 || *expected == ' ');
 			if (*expected)
 				++expected;
 		}
@@ -169,10 +169,10 @@ main(void)
 			CS_BOOL res;
 			res = 123;
 			cs_will_convert(context, from, to, &res);
-			assert(res == CS_FALSE);
+			TDS_ASSERT(res == CS_FALSE);
 			res = 123;
 			cs_will_convert(NULL, from, to, &res);
-			assert(res == CS_FALSE);
+			TDS_ASSERT(res == CS_FALSE);
 		}
 	}
 

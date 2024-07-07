@@ -97,7 +97,7 @@ main(int argc, char **argv)
 	setbuf(stderr, NULL);
 
 	ctx = tds_alloc_context(NULL);
-	assert(ctx);
+	TDS_ASSERT(ctx);
 	if (!ctx->locale->datetime_fmt) {
 		/* set default in case there's no locale file */
 		ctx->locale->datetime_fmt = strdup(STD_DATETIME_FMT);
@@ -139,8 +139,8 @@ main(int argc, char **argv)
 			continue;	/* don't attempt same types */
 
 		/* valid types should have a name ! */
-		assert(tds_prtype(srctype)[0] != 0);
-		assert(tds_prtype(desttype)[0] != 0);
+		TDS_ASSERT(tds_prtype(srctype)[0] != 0);
+		TDS_ASSERT(tds_prtype(desttype)[0] != 0);
 
 		cr.n.precision = 8;
 		cr.n.scale = 2;
@@ -213,7 +213,7 @@ main(int argc, char **argv)
 				src = "1";
 				break;
 			}
-			assert(src);
+			TDS_ASSERT(src);
 			srclen = strlen(src);
 			break;
 		case SYBINT1:

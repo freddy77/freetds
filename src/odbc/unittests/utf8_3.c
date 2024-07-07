@@ -42,9 +42,9 @@ main(void)
 		memset(buf, '-', sizeof(buf));
 		CHKGetData(1, SQL_C_CHAR, buf, 2, &len, i < 3 ? "I" : "S");
 		printf("res %ld buf { 0x%02x, 0x%02x }\n", (long int) len, buf[0], buf[1]);
-		assert(len == SQL_NO_TOTAL || len == 4 - i);
-		assert(buf[0] == (unsigned char) expected[i]);
-		assert(buf[1] == 0);
+		TDS_ASSERT(len == SQL_NO_TOTAL || len == 4 - i);
+		TDS_ASSERT(buf[0] == (unsigned char) expected[i]);
+		TDS_ASSERT(buf[1] == 0);
 	}
 	CHKGetData(1, SQL_C_CHAR, buf, 2, &len, "No");
 
@@ -66,7 +66,7 @@ main(void)
 		memset(buf, 0, sizeof(buf));
 		CHKGetData(1, SQL_C_CHAR, buf, sizeof(buf), &len, "I");
 		printf("loop %d output '%s'\n", i, buf);
-		assert(strlen((char *) buf) == sizeof(buf) - 1);
+		TDS_ASSERT(strlen((char *) buf) == sizeof(buf) - 1);
 	}
 	CHKGetData(1, SQL_C_CHAR, buf, sizeof(buf), &len, "S");
 

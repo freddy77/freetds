@@ -108,7 +108,7 @@ main(void)
 				} else {	/* ret == CS_SUCCEED */
 					col1[datalength] = 0;
 					printf("col1 = %s\n", col1);
-					assert(strcmp(col1, expected[rows]) == 0);
+					TDS_ASSERT(strcmp(col1, expected[rows]) == 0);
 					++rows;
 				}
 			}

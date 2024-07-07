@@ -301,7 +301,7 @@ main(void)
 			if (RetCode == SQL_NEED_DATA) {
 				for (t = test_infos; t < test_infos+num_tests && t->buf != p; ++t)
 					;
-				assert(t < test_infos+num_tests);
+				TDS_ASSERT(t < test_infos+num_tests);
 				if (t->c_type == SQL_C_CHAR || t->c_type == SQL_C_WCHAR) {
 					unsigned char_len = 1;
 

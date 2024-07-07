@@ -32,7 +32,7 @@ query_test(int flags, SQLRETURN expected, const char *expected_status)
 	SQLTCHAR *err = (SQLTCHAR *) ODBC_GET(sizeof(odbc_err)*sizeof(SQLTCHAR));
 	SQLTCHAR *state = (SQLTCHAR *) ODBC_GET(sizeof(odbc_sqlstate)*sizeof(SQLTCHAR));
 
-	assert(odbc_stmt != SQL_NULL_HSTMT);
+	TDS_ASSERT(odbc_stmt != SQL_NULL_HSTMT);
 	odbc_reset_statement();
 
 	odbc_command("create table #tmp1 (id tinyint, value char(20))");

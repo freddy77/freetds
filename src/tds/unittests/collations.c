@@ -48,20 +48,20 @@ get_coll_md5(const char *name, char *digest)
 	unsigned char dig[16];
 
 	ret = asprintf(&sql, "convert(nvarchar(1024), bin) collate %s", name);
-	assert(ret >= 0);
+	TDS_ASSERT(ret >= 0);
 
 	ret = asprintf(&p, "convert(varchar(4096), %s)", sql);
-	assert(ret >= 0);
+	TDS_ASSERT(ret >= 0);
 	free(sql);
 	sql = NULL;
 
 	ret = asprintf(&sql, "select convert(varbinary(8000), %s) from #all_chars order by id", p);
-	assert(ret >= 0);
+	TDS_ASSERT(ret >= 0);
 	free(p);
 	p = NULL;
 
 	rc = tds_submit_query(tds, sql);
-	assert(rc == TDS_SUCCESS);
+	TDS_ASSERT(rc == TDS_SUCCESS);
 	free(sql);
 	sql = NULL;
 
@@ -70,16 +70,16 @@ get_coll_md5(const char *name, char *digest)
 	while ((rc = tds_process_tokens(tds, &result_type, &done_flags, TDS_RETURN_ROW)) == TDS_SUCCESS) {
 		TDSCOLUMN *curcol;
 
-		assert(result_type == TDS_ROW_RESULT);
+		TDS_ASSERT(result_type == TDS_ROW_RESULT);
 
 		curcol = tds->current_results->columns[0];
 
-		assert(!is_blob_col(curcol));
-		assert(curcol->on_server.column_type == XSYBVARBINARY);
+		TDS_ASSERT(!is_blob_col(curcol));
+		TDS_ASSERT(curcol->on_server.column_type == XSYBVARBINARY);
 
 		MD5Update(&ctx, curcol->column_data, curcol->column_cur_size);
 	}
-	assert(rc == TDS_NO_MORE_RESULTS);
+	TDS_ASSERT(rc == TDS_NO_MORE_RESULTS);
 
 	memset(dig, 0, sizeof(dig));
 	MD5Final(&ctx, dig);
@@ -101,18 +101,18 @@ get_encoding_coll(TDS71_COLLATION *coll, char *digest, char *cp, const char *nam
 
 	/* do a select and check all results */
 	rc = tds_submit_query(tds, sql);
-	assert(rc == TDS_SUCCESS);
+	TDS_ASSERT(rc == TDS_SUCCESS);
 
-	assert(tds_process_tokens(tds, &result_type, NULL, TDS_TOKEN_RESULTS) == TDS_SUCCESS);
+	TDS_ASSERT(tds_process_tokens(tds, &result_type, NULL, TDS_TOKEN_RESULTS) == TDS_SUCCESS);
 
 	if (result_type == TDS_DONE_RESULT)
 		return;
 
-	assert(result_type == TDS_ROWFMT_RESULT);
+	TDS_ASSERT(result_type == TDS_ROWFMT_RESULT);
 
-	assert(tds_process_tokens(tds, &result_type, NULL, TDS_TOKEN_RESULTS) == TDS_SUCCESS);
+	TDS_ASSERT(tds_process_tokens(tds, &result_type, NULL, TDS_TOKEN_RESULTS) == TDS_SUCCESS);
 
-	assert(result_type == TDS_ROW_RESULT);
+	TDS_ASSERT(result_type == TDS_ROW_RESULT);
 
 	while ((rc = tds_process_tokens(tds, &result_type, NULL, TDS_STOPAT_ROWFMT|TDS_STOPAT_DONE|TDS_RETURN_ROW|TDS_RETURN_COMPUTE)) == TDS_SUCCESS) {
 
@@ -167,7 +167,7 @@ test_column_encoding(void)
 	FILE *f = fopen("collations.txt", "r");
 	char line[1024];
 
-	assert(f);
+	TDS_ASSERT(f);
 	while (fgets(line, sizeof(line), f)) {
 		TDS71_COLLATION coll;
 		char cp[128], digest[33];
@@ -206,7 +206,7 @@ add_couple(unsigned n)
 	cnt = 0;
 	++id;
 	ret = asprintf(&sql, "insert into #all_chars values(%d, convert(varbinary(2048), 0x%s))", id, buf);
-	assert(ret >= 0);
+	TDS_ASSERT(ret >= 0);
 
 	if (isatty(fileno(stdout))) {
 		printf("\rInserting: %d", id);
@@ -214,7 +214,7 @@ add_couple(unsigned n)
 	}
 
 	ret = run_query(tds, sql);
-	assert(ret == TDS_SUCCESS);
+	TDS_ASSERT(ret == TDS_SUCCESS);
 
 	free(sql);
 }
@@ -243,7 +243,7 @@ prepare_all_chars(void)
 	int ret;
 
 	ret = run_query(tds, "CREATE TABLE #all_chars(id int, bin varbinary(2048))");
-	assert(ret == TDS_SUCCESS);
+	TDS_ASSERT(ret == TDS_SUCCESS);
 
 	add_plane0();
 	add_couples();
@@ -259,26 +259,26 @@ extract_collations(void)
 	FILE *f;
 
 	f = fopen("collations.txt", "w");
-	assert(f);
+	TDS_ASSERT(f);
 
 	rc = tds_submit_query(tds, "select name from ::fn_helpcollations() order by name");
-	assert(rc == TDS_SUCCESS);
+	TDS_ASSERT(rc == TDS_SUCCESS);
 
 	while ((rc = tds_process_tokens(tds, &result_type, &done_flags, TDS_RETURN_ROW)) == TDS_SUCCESS) {
 		TDSCOLUMN *curcol;
 		int len;
 
-		assert(result_type == TDS_ROW_RESULT);
+		TDS_ASSERT(result_type == TDS_ROW_RESULT);
 
 		curcol = tds->current_results->columns[0];
 
-		assert(!is_blob_col(curcol));
-		assert(curcol->column_type == SYBVARCHAR);
+		TDS_ASSERT(!is_blob_col(curcol));
+		TDS_ASSERT(curcol->column_type == SYBVARCHAR);
 
 		len = curcol->column_cur_size;
 		fprintf(f, "%*.*s\n", len, len, curcol->column_data);
 	}
-	assert(rc == TDS_NO_MORE_RESULTS);
+	TDS_ASSERT(rc == TDS_NO_MORE_RESULTS);
 
 	fclose(f);
 }

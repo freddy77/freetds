@@ -53,34 +53,34 @@ odbc_c2string(char *out, SQLSMALLINT out_c_type, const void *in, size_t in_len)
 			s += sprintf(s, "%02X", num->val[i]);
 		break;
 	case SQL_C_BINARY:
-		assert(in_len >= 0);
+		TDS_ASSERT(in_len >= 0);
 		for (i = 0; i < in_len; ++i)
 			s += sprintf(s, "%02X", IN.bin[i]);
 		break;
 	case SQL_C_CHAR:
-		assert(IN.s[in_len] == 0);
+		TDS_ASSERT(IN.s[in_len] == 0);
 		s += sprintf(s, "%u ", (unsigned int) in_len);
 		for (i = 0; i < in_len; ++i)
 			s = add_char(s, (unsigned char) IN.s[i]);
 		*s = 0;
 		break;
 	case SQL_C_WCHAR:
-		assert(in_len >=0 && (in_len % sizeof(SQLWCHAR)) == 0);
+		TDS_ASSERT(in_len >=0 && (in_len % sizeof(SQLWCHAR)) == 0);
 		s += sprintf(s, "%u ", (unsigned int) (in_len / sizeof(SQLWCHAR)));
 		for (i = 0; i < in_len / sizeof(SQLWCHAR); ++i)
 			s = add_char(s, IN.ws[i]);
 		*s = 0;
 		break;
 	case SQL_C_LONG:
-		assert(in_len == sizeof(SQLINTEGER));
+		TDS_ASSERT(in_len == sizeof(SQLINTEGER));
 		sprintf(s, "%ld", (long int) IN.i);
 		break;
 	case SQL_C_SBIGINT:
-		assert(in_len == sizeof(SQLBIGINT));
+		TDS_ASSERT(in_len == sizeof(SQLBIGINT));
 		sprintf(s, "%" PRId64, (int64_t) IN.bi);
 		break;
 	case SQL_C_SHORT:
-		assert(in_len == sizeof(SQLSMALLINT));
+		TDS_ASSERT(in_len == sizeof(SQLSMALLINT));
 		sprintf(s, "%d", (int) IN.si);
 		break;
 	case SQL_C_TIMESTAMP:
@@ -91,7 +91,7 @@ odbc_c2string(char *out, SQLSMALLINT out_c_type, const void *in, size_t in_len)
 		break;
 	default:
 		/* not supported */
-		assert(0);
+		TDS_ASSERT(0);
 		break;
 	}
 }

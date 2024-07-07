@@ -36,6 +36,8 @@
 #include <unistd.h>
 #endif
 
+#define TDS_ASSERT assert
+
 #ifdef _WIN32
 #include <process.h>
 #define EXE_SUFFIX ".exe"
@@ -126,7 +128,7 @@ cat(const char *fn, FILE *out)
 {
 	char line[1024];
 	FILE *f = fopen(fn, "r");
-	assert(f);
+	TDS_ASSERT(f);
 	while (fgets(line, sizeof(line), f)) {
 		fputs("  ", out);
 		fputs(line, out);
@@ -143,16 +145,16 @@ read_file(const char *fn)
 	size_t readed;
 
 	FILE *f = fopen(fn, "r");
-	assert(f);
-	assert(fseek(f, 0, SEEK_END) == 0);
+	TDS_ASSERT(f);
+	TDS_ASSERT(fseek(f, 0, SEEK_END) == 0);
 	pos = ftell(f);
-	assert(pos >= 0);
-	assert(fseek(f, 0, SEEK_SET) == 0);
+	TDS_ASSERT(pos >= 0);
+	TDS_ASSERT(fseek(f, 0, SEEK_SET) == 0);
 	buf = malloc(pos + 10); /* allocate some more space */
-	assert(buf);
+	TDS_ASSERT(buf);
 	readed = fread(buf, 1, pos+1, f);
-	assert(readed <= pos);
-	assert(feof(f));
+	TDS_ASSERT(readed <= pos);
+	TDS_ASSERT(feof(f));
 	fclose(f);
 	buf[readed] = 0;
 	return buf;
@@ -242,7 +244,7 @@ tsql(const char *input_data)
 	FILE *f;
 
 	f = fopen("input", "w");
-	assert(f);
+	TDS_ASSERT(f);
 	fputs(input_data, f);
 	fclose(f);
 
@@ -272,7 +274,7 @@ defncopy(const char *object_name)
 
 	// empty input
 	f = fopen("input", "w");
-	assert(f);
+	TDS_ASSERT(f);
 	fclose(f);
 
 	strcpy(cmd, ".." SDIR_SEPARATOR "defncopy" EXE_SUFFIX);

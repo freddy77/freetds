@@ -30,9 +30,9 @@ static void test_declaration(TDSSOCKET *tds, TDSCOLUMN *curcol)
 
 	declaration[0] = 0;
 	ret = tds_get_column_declaration(tds, curcol, declaration);
-	assert(ret == TDS_SUCCESS);
+	TDS_ASSERT(ret == TDS_SUCCESS);
 	printf("Declaration: %s\n", declaration);
-	assert(declaration[0] != 0);
+	TDS_ASSERT(declaration[0] != 0);
 }
 
 int
@@ -46,7 +46,7 @@ main(void)
 	setbuf(stderr, NULL);
 
 	ctx = tds_alloc_context(NULL);
-	assert(ctx);
+	TDS_ASSERT(ctx);
 	if (!ctx->locale->datetime_fmt) {
 		/* set default in case there's no locale file */
 		ctx->locale->datetime_fmt = strdup(STD_DATETIME_FMT);
@@ -57,7 +57,7 @@ main(void)
 	ctx->locale->time_fmt = strdup("%H:%M:%S");
 
 	tds = tds_alloc_socket(ctx, 512);
-	assert(tds);
+	TDS_ASSERT(tds);
 
 	tds_all_types(tds, test_declaration);
 

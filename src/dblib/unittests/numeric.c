@@ -29,7 +29,7 @@ zero_end(DBNUMERIC *num)
 	unsigned len = 4u+num->precision*27213u/65536u;
 	if (num->precision < 1 || num->precision > 77)
 		return;
-	assert(len >= 4 && len <= sizeof(*num));
+	TDS_ASSERT(len >= 4 && len <= sizeof(*num));
 	memset(((char*) num) + len, 0, sizeof(*num) - len);
 }
 
@@ -122,7 +122,7 @@ test(int bind_type, const char *bind_name, int override_prec, int override_scale
 		case SUCCEED:
 			if (DBROWS(dbproc) == FAIL)
 				continue;
-			assert(DBROWS(dbproc) == SUCCEED);
+			TDS_ASSERT(DBROWS(dbproc) == SUCCEED);
 			printf("dbrows() returned SUCCEED, processing rows\n");
 
 			memset(num, 0, sizeof(*num));

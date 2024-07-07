@@ -32,6 +32,8 @@
 #include <freetds/replacements.h>
 #include <freetds/bool.h>
 
+#define TDS_ASSERT assert
+
 #ifndef HAVE_SQLLEN
 #ifndef SQLULEN
 #define SQLULEN SQLUINTEGER
