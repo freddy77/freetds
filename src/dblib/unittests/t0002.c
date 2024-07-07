@@ -131,7 +131,7 @@ main(int argc, char **argv)
 #ifdef MICROSOFT_DBLIB
 			if (i == 0) {
 				rc = dbnextrow(dbproc);
-				assert(rc == REG_ROW);
+				TDS_ASSERT(rc == REG_ROW);
 				++i;
 				rows_in_buffer = 1;
 			}
@@ -156,7 +156,7 @@ main(int argc, char **argv)
 
 			if (rows_in_buffer == buffer_count) {
 				/* The buffer should be full */
-				assert(BUF_FULL == dbnextrow(dbproc));
+				TDS_ASSERT(BUF_FULL == dbnextrow(dbproc));
 			}
 		}
 		if (iresults == 1) {
@@ -176,39 +176,39 @@ main(int argc, char **argv)
 	rc = dbgetrow(dbproc, 1);
 	if(rc != NO_MORE_ROWS)	/* row 1 is not among the 31-40 in the buffer */
 		fprintf(stderr, "Failed: dbgetrow returned %d.\n", rc);
-	assert(rc == NO_MORE_ROWS);
+	TDS_ASSERT(rc == NO_MORE_ROWS);
 
 	rc = dbgetrow(dbproc, 37);
 	if(rc != REG_ROW)
 		fprintf(stderr, "Failed: dbgetrow returned %d.\n", rc);
-	assert(rc == REG_ROW);
+	TDS_ASSERT(rc == REG_ROW);
 	verify(37, testint, teststr);	/* first buffered row should be 37 */
 
 	rc = dbnextrow(dbproc);
 	if(rc != REG_ROW)
 		fprintf(stderr, "Failed: dbgetrow returned %d.\n", rc);
-	assert(rc == REG_ROW);
+	TDS_ASSERT(rc == REG_ROW);
 	verify(38, testint, teststr);	/* next buffered row should be 38 */
 
 	rc = dbgetrow(dbproc, 11);
-	assert(rc == NO_MORE_ROWS);	/* only 10 (not 11) rows buffered */
+	TDS_ASSERT(rc == NO_MORE_ROWS);	/* only 10 (not 11) rows buffered */
 
 	rc = dbgetrow(dbproc, 46);
-	assert(rc == REG_ROW);
+	TDS_ASSERT(rc == REG_ROW);
 	verify(46, testint, teststr);	/* last buffered row should be 46 */
 
 	/* Attempt dbnextrow when buffer has no space (10 out of 10 in use). */
 	rc = dbnextrow(dbproc);
-	assert(rc == BUF_FULL);
+	TDS_ASSERT(rc == BUF_FULL);
 
 	dbclrbuf(dbproc, 3);		/* remove rows 37, 38, and 39 */
 
 	rc = dbnextrow(dbproc);
-	assert(rc == REG_ROW);
+	TDS_ASSERT(rc == REG_ROW);
 	verify(47, testint, teststr);	/* fetch row from database, should be 47 */
 
 	rc = dbnextrow(dbproc);
-	assert(rc == REG_ROW);
+	TDS_ASSERT(rc == REG_ROW);
 	verify(48, testint, teststr);	/* fetch row from database, should be 48 */
 
 	/* buffer contains 8 rows (40-47) try removing 10 rows */

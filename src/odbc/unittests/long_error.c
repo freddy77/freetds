@@ -2,7 +2,7 @@
 
 
 /*
-Demonstration of triggered assert when invoking this stored procedure
+Demonstration of triggered TDS_ASSERT when invoking this stored procedure
 using FreeTDS odbc driver:
 
 create procedure proc_longerror as

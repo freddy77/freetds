@@ -102,13 +102,13 @@ main(void)
 		/* test */
 		memset(buf, 'a', i);
 		buf[i] = (char) x;
-		assert(TDS_SUCCEED(res));
+		TDS_ASSERT(TDS_SUCCEED(res));
 		if (out_len != i+1) {
 			fprintf(stderr, "out %u bytes expected %d\n",
 				(unsigned int) out_len, i+1);
 			return 1;
 		}
-		assert(memcmp(out, buf, i+1) == 0);
+		TDS_ASSERT(memcmp(out, buf, i+1) == 0);
 		free(out);
 	}
 	fclose(f);

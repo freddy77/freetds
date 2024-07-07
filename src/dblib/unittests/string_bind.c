@@ -40,7 +40,7 @@ test_row(int vartype, const char *vartype_name, const char *expected, int line)
 		exit(1);
 	}
 
-	assert(str[sizeof(str) - 1] == 0);
+	TDS_ASSERT(str[sizeof(str) - 1] == 0);
 	if (vartype == CHARBIND) {
 		/* not terminated space padded */
 		char *p = strchr(str, '$');
@@ -51,7 +51,7 @@ test_row(int vartype, const char *vartype_name, const char *expected, int line)
 		i = p - str + 1;
 	}
 	for (; i < sizeof(str)-1; ++i) {
-		assert(str[i] == '$');
+		TDS_ASSERT(str[i] == '$');
 		str[i] = 0;
 	}
 
@@ -65,7 +65,7 @@ test_row(int vartype, const char *vartype_name, const char *expected, int line)
 		fprintf(stderr, "Was expecting no more rows\n");
 		exit(1);
 	}
-	assert(expected_error == 0);
+	TDS_ASSERT(expected_error == 0);
 }
 
 #define row(bind, expected) test_row(bind, #bind, expected, __LINE__)

@@ -54,12 +54,12 @@ test0(const char *src, int prec, int scale, int prec2, unsigned char scale2)
 	for (i = 0; i < (scale2 - scale); ++i)
 		strcat(buf, "0");
 	for (i = 0; i < (scale - scale2); ++i) {
-		assert(strlen(buf) > 1);
+		TDS_ASSERT(strlen(buf) > 1);
 		buf[strlen(buf)-1] = 0;
 	}
 	if (scale2) {
 		size_t len = strlen(buf);
-		assert(len > scale2);
+		TDS_ASSERT(len > scale2);
 		memmove(buf + len - scale2 + 1, buf + len - scale2, scale2 + 1);
 		buf[len-scale2] = '.';
 	}

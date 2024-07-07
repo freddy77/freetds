@@ -230,7 +230,7 @@ static void create_type(TDSSOCKET *tds, int desttype, int server_type, tds_any_t
 		src = "1";
 		break;
 	}
-	assert(src);
+	TDS_ASSERT(src);
 	srclen = strlen(src);
 
 	/*
@@ -257,9 +257,9 @@ static void create_type(TDSSOCKET *tds, int desttype, int server_type, tds_any_t
 	       desttype, tds_prtype(desttype), result);
 
 	results = tds_alloc_param_result(NULL);
-	assert(results);
+	TDS_ASSERT(results);
 	curcol = results->columns[0];
-	assert(curcol);
+	TDS_ASSERT(curcol);
 
 	tds_set_column_type(tds->conn, curcol, server_type);
 	curcol->on_server.column_size = curcol->column_size = curcol->column_cur_size = result;
@@ -295,7 +295,7 @@ static void create_type(TDSSOCKET *tds, int desttype, int server_type, tds_any_t
 		tds->conn->tds_version = TDSVER_MS;
 
 		results = tds_alloc_param_result(results);
-		assert(results);
+		TDS_ASSERT(results);
 
 		basecol = results->columns[0];
 		curcol = results->columns[1];
@@ -308,13 +308,13 @@ static void create_type(TDSSOCKET *tds, int desttype, int server_type, tds_any_t
 		v->type = basecol->column_type;
 		memcpy(v->collation, basecol->column_collation, sizeof(v->collation));
 
-		assert(basecol->column_cur_size > 0);
+		TDS_ASSERT(basecol->column_cur_size > 0);
 		v->data = tds_new(TDS_CHAR, basecol->column_cur_size);
-		assert(v->data);
+		TDS_ASSERT(v->data);
 		v->data_len = basecol->column_cur_size;
 		curcol->column_cur_size = v->data_len;
 		curcol->column_size = curcol->on_server.column_size = 8009;
-		assert(!is_blob_col(basecol));
+		TDS_ASSERT(!is_blob_col(basecol));
 		memcpy(v->data, basecol->column_data, v->data_len);
 		CHECK_COLUMN_EXTRA(curcol);
 

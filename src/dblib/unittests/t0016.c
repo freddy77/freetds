@@ -319,7 +319,7 @@ count_file_rows(FILE *f)
 	unsigned rows = 1;
 	char last = '\n';
 
-	assert(f);
+	TDS_ASSERT(f);
 
 	while ((s = fgets_raw(line1, sizeof(line1), f)) != 0) {
 		last = line1[s-1];
@@ -328,6 +328,6 @@ count_file_rows(FILE *f)
 	}
 	if (last == '\n')
 		--rows;
-	assert(!ferror(f));
+	TDS_ASSERT(!ferror(f));
 	return rows;
 }

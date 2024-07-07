@@ -92,9 +92,9 @@ test(int argc, char **argv, int over4k)
 	fseek(fp, 0, SEEK_SET);
 
 	blob = (char *) malloc(isiz);
-	assert(blob);
+	TDS_ASSERT(blob);
 	result = fread((void *) blob, isiz, 1, fp);
-	assert(result == 1);
+	TDS_ASSERT(result == 1);
 	fclose(fp);
 
 	drop_table();
@@ -119,14 +119,14 @@ test(int argc, char **argv, int over4k)
 	}
 
 	for (i=0; (result = dbnextrow(dbproc)) != NO_MORE_ROWS; i++) {
-		assert(REG_ROW == result);
+		TDS_ASSERT(REG_ROW == result);
 		printf("fetching row %d\n", i+1);
 		strcpy(objname, TABLE_NAME ".PigTure");
 		textPtr = dbtxptr(dbproc, 1);
 		timeStamp = dbtxtimestamp(dbproc, 1);
 		break; /* can't proceed until no more rows */
 	}
-	assert(REG_ROW == result || 0 < i);
+	TDS_ASSERT(REG_ROW == result || 0 < i);
 
 	if (!textPtr && !timeStamp && dbtds(dbproc) >= DBTDS_7_2) {
 		printf("Protocol 7.2+ detected, test not supported\n");
@@ -152,7 +152,7 @@ test(int argc, char **argv, int over4k)
 			return 5;
 		printf("done (in one shot)\n");
 		for (; (result = dbnextrow(dbproc)) != NO_MORE_ROWS; i++) {
-			assert(REG_ROW == result);
+			TDS_ASSERT(REG_ROW == result);
 			printf("fetching row %d?\n", i+1);
 		}
 	} else {
@@ -185,7 +185,7 @@ test(int argc, char **argv, int over4k)
 		exit(1);
 	}
 	dbproc = dbopen(login, SERVER);
-	assert(dbproc);
+	TDS_ASSERT(dbproc);
 	if (strlen(DATABASE)) {
 		dbuse(dbproc, DATABASE);
 	}

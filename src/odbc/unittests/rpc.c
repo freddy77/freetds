@@ -88,7 +88,7 @@ Test(const char *name)
 		printf("executing SQLBindParameter for parameter %d\n", 1+ipar);
 		if( args[ipar].BufferLength > 0 ) {
 			args[ipar].ParameterValuePtr = (SQLPOINTER) ODBC_GET(args[ipar].BufferLength);
-			assert(args[ipar].ParameterValuePtr != NULL);
+			TDS_ASSERT(args[ipar].ParameterValuePtr != NULL);
 			memset(args[ipar].ParameterValuePtr, 0, args[ipar].BufferLength);
 			memset(args[ipar].ParameterValuePtr, 'a', args[ipar].BufferLength - 1);
 		}
@@ -185,7 +185,7 @@ Test(const char *name)
 			break;
 		default:
 			printf("type unsupported in this test\n");
-			assert(0);
+			TDS_ASSERT(0);
 			break;
 		}
 	}

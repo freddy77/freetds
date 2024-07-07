@@ -17,26 +17,14 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#undef NDEBUG
-#include <config.h>
+#include "common.h"
 
 #ifdef HAVE_STRSEP
 char *tds_strsep(char **stringp, const char *delim);
 #include "../strsep.c"
 #else
-#include <stdarg.h>
-#include <stdio.h>
-
-#if HAVE_STRING_H
-#include <string.h>
-#endif /* HAVE_STRING_H */
-
 #include <freetds/replacements.h>
 #endif
-
-#include <stdarg.h>
-#include <stdlib.h>
-#include <assert.h>
 
 /* test strsep with same separators */
 static void
@@ -54,16 +42,16 @@ test(char *s, const char *sep, ...)
 		out = tds_strsep(&s, sep);
 		expected = va_arg(ap, const char *);
 		if (expected) {
-			assert(out && strcmp(out, expected) == 0);
+			TDS_ASSERT(out && strcmp(out, expected) == 0);
 		} else {
-			assert(out == NULL);
+			TDS_ASSERT(out == NULL);
 		}
 	} while (expected != NULL);
 	va_end(ap);
 
 	/* should continue to give NULL */
-	assert(tds_strsep(&s, sep) == NULL);
-	assert(tds_strsep(&s, sep) == NULL);
+	TDS_ASSERT(tds_strsep(&s, sep) == NULL);
+	TDS_ASSERT(tds_strsep(&s, sep) == NULL);
 
 	free(copy);
 }
@@ -74,10 +62,10 @@ test2(void)
 {
 	char buf[] = "one;two=value";
 	char *s = buf;
-	assert(strcmp(tds_strsep(&s, ";:"), "one") == 0);
-	assert(strcmp(tds_strsep(&s, "="), "two") == 0);
-	assert(strcmp(tds_strsep(&s, ""), "value") == 0);
-	assert(tds_strsep(&s, "") == NULL);
+	TDS_ASSERT(strcmp(tds_strsep(&s, ";:"), "one") == 0);
+	TDS_ASSERT(strcmp(tds_strsep(&s, "="), "two") == 0);
+	TDS_ASSERT(strcmp(tds_strsep(&s, ""), "value") == 0);
+	TDS_ASSERT(tds_strsep(&s, "") == NULL);
 }
 
 int

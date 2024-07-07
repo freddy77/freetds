@@ -49,7 +49,7 @@ main(void)
 	}
 
 	odbc_dstr_copy_flag((TDS_DBC *) odbc_conn, &s, 3, (ODBC_CHAR*) "foo", 0);
-	assert(strcmp("foo", tds_dstr_cstr(&s)) == 0);
+	TDS_ASSERT(strcmp("foo", tds_dstr_cstr(&s)) == 0);
 
 #define WIDE_TEST(chars, exp) do { \
 	static const SQLWCHAR input[] = chars; \

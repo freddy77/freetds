@@ -22,6 +22,8 @@
 /* allows to use some internal functions */
 #include "../query.c"
 
+#define TDS_ASSERT assert
+
 #include <freetds/data.h>
 
 static void
@@ -39,8 +41,8 @@ test_generic(const char *s, int expected_pos, bool comment, int line)
 	else
 		next = tds_skip_quoted(s);
 	tdsdump_log(TDS_DBG_INFO1, "returned ptr %p diff %ld\n", next, (long int) (next - s));
-	assert(next >= s);
-	assert(next - s == expected_pos);
+	TDS_ASSERT(next >= s);
+	TDS_ASSERT(next - s == expected_pos);
 
 	/* ucs2/utf16 */
 	len = strlen(s);
@@ -55,9 +57,9 @@ test_generic(const char *s, int expected_pos, bool comment, int line)
 	else
 		next = tds_skip_quoted_ucs2le(s, s + len*2);
 	tdsdump_log(TDS_DBG_INFO1, "returned ptr %p diff %ld\n", next, (long int) (next - s));
-	assert(next >= s);
-	assert((next - s) % 2 == 0);
-	assert((next - s) / 2 == expected_pos);
+	TDS_ASSERT(next >= s);
+	TDS_ASSERT((next - s) % 2 == 0);
+	TDS_ASSERT((next - s) / 2 == expected_pos);
 	free(buf);
 }
 

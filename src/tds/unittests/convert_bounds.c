@@ -88,7 +88,7 @@ main(void)
 	setbuf(stderr, NULL);
 
 	ctx = tds_alloc_context(NULL);
-	assert(ctx);
+	TDS_ASSERT(ctx);
 	if (!ctx->locale->datetime_fmt) {
 		/* set default in case there's no locale file */
 		ctx->locale->datetime_fmt = strdup(STD_DATETIME_FMT);
@@ -196,7 +196,7 @@ real_test(smp n, int srctype, bool is_integer)
 				}
 
 				/* if failed it should have been an overflow, types are compatible */
-				assert((result >= 0) || result == TDS_CONVERT_OVERFLOW);
+				TDS_ASSERT((result >= 0) || result == TDS_CONVERT_OVERFLOW);
 				TDS_ZERO_FREE(s_num);
 			}
 		}
@@ -231,7 +231,7 @@ convert_to_float(smp n, int type)
 	case SYBFLT8:
 		return (TDS_FLOAT) ret;
 	default:
-		assert(!"wrong type");
+		TDS_ASSERT(!"wrong type");
 	}
 	return 0;
 }
