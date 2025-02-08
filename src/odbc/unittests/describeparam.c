@@ -39,6 +39,7 @@ TEST_MAIN()
 	SQLINTEGER id;
 	const char *env;
 
+	odbc_conn_additional_params = "Encrypt=No;";
 	odbc_connect();
 
 	if (!odbc_db_is_microsoft() || odbc_db_version_int() < 0x0b000000u) {
