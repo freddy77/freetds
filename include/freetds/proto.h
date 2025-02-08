@@ -181,51 +181,51 @@ enum {
  */
 typedef enum
 {
-	SYBCHAR = 47,		/* 0x2F */
-	SYBVARCHAR = 39,	/* 0x27 */
-	SYBINTN = 38,		/* 0x26 */
-	SYBINT1 = 48,		/* 0x30 */
-	SYBINT2 = 52,		/* 0x34 */
-	SYBINT4 = 56,		/* 0x38 */
-	SYBFLT8 = 62,		/* 0x3E */
-	SYBDATETIME = 61,	/* 0x3D */
-	SYBBIT = 50,		/* 0x32 */
-	SYBTEXT = 35,		/* 0x23 */
-	SYBNTEXT = 99,		/* 0x63 */
-	SYBIMAGE = 34,		/* 0x22 */
-	SYBMONEY4 = 122,	/* 0x7A */
-	SYBMONEY = 60,		/* 0x3C */
-	SYBDATETIME4 = 58,	/* 0x3A */
-	SYBREAL = 59,		/* 0x3B */
-	SYBBINARY = 45,		/* 0x2D */
-	SYBVOID = 31,		/* 0x1F */
-	SYBVARBINARY = 37,	/* 0x25 */
-	SYBBITN = 104,		/* 0x68 */
-	SYBNUMERIC = 108,	/* 0x6C */
-	SYBDECIMAL = 106,	/* 0x6A */
-	SYBFLTN = 109,		/* 0x6D */
-	SYBMONEYN = 110,	/* 0x6E */
-	SYBDATETIMN = 111,	/* 0x6F */
+	SYBCHAR = 47,		/* 0x2F char */
+	SYBVARCHAR = 39,	/* 0x27 varchar */
+	SYBINTN = 38,		/* 0x26 integer */
+	SYBINT1 = 48,		/* 0x30 tinyint */
+	SYBINT2 = 52,		/* 0x34 smallint */
+	SYBINT4 = 56,		/* 0x38 integer */
+	SYBFLT8 = 62,		/* 0x3E float */
+	SYBDATETIME = 61,	/* 0x3D type_timestamp */
+	SYBBIT = 50,		/* 0x32 bit */
+	SYBTEXT = 35,		/* 0x23 longvarchar */
+	SYBNTEXT = 99,		/* 0x63 wlongvarchar */
+	SYBIMAGE = 34,		/* 0x22 longvarbinary */
+	SYBMONEY4 = 122,	/* 0x7A decimal */
+	SYBMONEY = 60,		/* 0x3C decimal */
+	SYBDATETIME4 = 58,	/* 0x3A type_timestamp */
+	SYBREAL = 59,		/* 0x3B real */
+	SYBBINARY = 45,		/* 0x2D binary */
+	SYBVOID = 31,		/* 0x1F ??? error */
+	SYBVARBINARY = 37,	/* 0x25 varbinary */
+	SYBBITN = 104,		/* 0x68 bit */
+	SYBNUMERIC = 108,	/* 0x6C numeric */
+	SYBDECIMAL = 106,	/* 0x6A decimal */
+	SYBFLTN = 109,		/* 0x6D real based on size ?? */
+	SYBMONEYN = 110,	/* 0x6E decimal */
+	SYBDATETIMN = 111,	/* 0x6F type_timestamp */
 
 /*
  * MS only types
  */
-	SYBINT8 = 127,		/* 0x7F */
-	XSYBCHAR = 175,		/* 0xAF */
-	XSYBVARCHAR = 167,	/* 0xA7 */
-	XSYBNVARCHAR = 231,	/* 0xE7 */
-	XSYBNCHAR = 239,	/* 0xEF */
-	XSYBVARBINARY = 165,	/* 0xA5 */
-	XSYBBINARY = 173,	/* 0xAD */
-	SYBUNIQUE = 36,		/* 0x24 */
-	SYBVARIANT = 98, 	/* 0x62 */
-	SYBMSUDT = 240,		/* 0xF0 */
-	SYBMSXML = 241,		/* 0xF1 */
-	SYBMSDATE = 40,  	/* 0x28 */
-	SYBMSTIME = 41,  	/* 0x29 */
-	SYBMSDATETIME2 = 42,  	/* 0x2a */
-	SYBMSDATETIMEOFFSET = 43,/* 0x2b */
-	SYBMSTABLE = 243,	/* 0xF3 */
+	SYBINT8 = 127,		/* 0x7F bigint */
+	XSYBCHAR = 175,		/* 0xAF char */
+	XSYBVARCHAR = 167,	/* 0xA7 varchar */
+	XSYBNVARCHAR = 231,	/* 0xE7 wvarchar */
+	XSYBNCHAR = 239,	/* 0xEF wchar */
+	XSYBVARBINARY = 165,	/* 0xA5 varbinary */
+	XSYBBINARY = 173,	/* 0xAD binary */
+	SYBUNIQUE = 36,		/* 0x24 guid */
+	SYBVARIANT = 98, 	/* 0x62 ss_variant */
+	SYBMSUDT = 240,		/* 0xF0 ss_udt */
+	SYBMSXML = 241,		/* 0xF1 ss_xml */
+	SYBMSDATE = 40,  	/* 0x28 type_date */
+	SYBMSTIME = 41,  	/* 0x29 ss_time2 */
+	SYBMSDATETIME2 = 42,  	/* 0x2a type_timestamp */
+	SYBMSDATETIMEOFFSET = 43,/* 0x2b ss_timestampoffset */
+	SYBMSTABLE = 243,	/* 0xF3 ?? weird... 0 ?? */
 
 /*
  * Sybase only types
