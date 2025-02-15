@@ -1,0 +1,26 @@
+#!/bin/bash
+
+go_win() {
+	local test_name="$1"
+	# we don't care about driver, we are going to use MS one
+	(cd freetds-1.5.dev.20241208/src/odbc/ && make -j4 &> /dev/null)
+	(cd freetds-1.5.dev.20241208/src/odbc/unittests/ && make "${test_name}.exe")
+	./wintests.sh "$test_name" &&
+	rm -f out_win.txt
+	ln ncli10-$(date +%Y%m%d)/*/"$test_name.txt" out_win.txt
+	cat out_win.txt
+}
+
+go_linux() {
+	local test_name="$1"
+	(cd build/src/odbc/ && make -j4 &> /dev/null)
+	(cd build/src/odbc/unittests/ && make "${test_name}")
+	(cd build/src/odbc/unittests/ && xTDSDUMP=stderr exec "./${test_name}" 2>&1) | tee out_linux.txt
+}
+
+set -e
+go_win "${1:-tokens}"
+echo '************************************************************'
+echo '************************************************************'
+echo '************************************************************'
+go_linux "${1:-tokens}"
