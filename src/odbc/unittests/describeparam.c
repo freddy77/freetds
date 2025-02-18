@@ -275,6 +275,17 @@ main(void)
 	check_int(digits, ==, 0);
 	check_int(nullable, ==, SQL_TRUE);
 
+	// TODO try to understand which output get into sql type and others
+	// suggested_tds_type_id for type
+	// also suggested_precision and sugested_scale (like NUMERIC but also for INT)
+	// for varchar length from suggested_tds_length
+	// "name" could be useful to check which argument
+
+
+	// TODO check if query cannot return types (see examples from MS
+	// sp_describe_undeclared_parameters)
+	// For instance SELECT 1 WHERE ? = ?
+
 	/*****************************************************************/
 
 	/* cleanup */

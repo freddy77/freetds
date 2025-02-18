@@ -727,6 +727,10 @@ SQLDescribeParam(SQLHSTMT hstmt, SQLUSMALLINT ipar, SQLSMALLINT FAR * pfSqlType,
 	if (!stmt->params_queried && !stmt->params_set && stmt->param_count > 0)
 		read_params(stmt);
 
+	// TODO check (n)varchar(max)
+	// TODO check money
+	// TODO check date
+
 	/* return information from IPD */
 	ipd = stmt->ipd;
 	if (ipar < 1 || ipar > ipd->header.sql_desc_count) {
