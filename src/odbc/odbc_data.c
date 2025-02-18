@@ -221,6 +221,7 @@ data_generic_set_type_info(TDSCOLUMN * col, struct _drecord *drec, SQLINTEGER od
 	case SYBINT4:
 		drec->sql_desc_concise_type = SQL_INTEGER;
 		drec->sql_desc_display_size = 11;	/* -1000000000 */
+		drec->sql_desc_precision = 10;
 		SET_INFO2("int", "", "", 10);
 
 	case SYBINT2:
@@ -249,6 +250,7 @@ data_generic_set_type_info(TDSCOLUMN * col, struct _drecord *drec, SQLINTEGER od
 		drec->sql_desc_unsigned = SQL_TRUE;
 		drec->sql_desc_concise_type = SQL_INTEGER;
 		drec->sql_desc_display_size = 10;
+		drec->sql_desc_precision = 10;
 		SET_INFO2("unsigned int", "", "", 10);
 
 	case SYBUINT2:
