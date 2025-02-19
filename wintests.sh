@@ -49,7 +49,7 @@ else
 	SERVER="(local)\\sql2008"
 	SERVER="192.168.122.76,1032"
 	SERVER="192.168.122.1,12345"
-	SERVER="172.17.0.2,1433"
+#	SERVER="172.17.0.2,1433"
 fi
 
 # find test directory
