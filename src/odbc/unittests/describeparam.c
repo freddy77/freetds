@@ -3,29 +3,87 @@
 #include "common.h"
 
 static void
-check_int(bool cond, long int value, const char *msg, int line)
+check_int(bool cond, long int value, long int expected, const char *msg, int line)
 {
 	if (cond)
 		return;
-	fprintf(stderr, "Invalid value %ld at line %d, check: %s\n", value, line, msg);
+	fprintf(stderr, "Invalid value %ld at line %d expected %ld, check: %s\n",
+		value, line, expected, msg);
 	exit(1);
 }
 
 #define check_int(value, cond, expected) \
-	check_int(value cond expected, value, #value " " #cond " " #expected, __LINE__)
+	check_int(value cond expected, value, expected, #value " " #cond " " #expected, __LINE__)
 
 static void
-check_type(bool cond, SQLSMALLINT value, const char *msg, int line)
+check_type(bool cond, SQLSMALLINT value, SQLSMALLINT expected, const char *msg, int line)
 {
 	if (cond)
 		return;
-	fprintf(stderr, "Invalid value %d(%s) at line %d, check: %s\n",
-		value, odbc_lookup_value(value, odbc_sql_types, "???"), line, msg);
+	fprintf(stderr, "Invalid value %d(%s) at line %d, expected %d(%s) check: %s\n",
+		value, odbc_lookup_value(value, odbc_sql_types, "???"), line,
+		expected, odbc_lookup_value(expected, odbc_sql_types, "???"),
+		msg);
 	exit(1);
 }
 
 #define check_type(value, cond, expected) \
-	check_type(value cond expected, value, #value " " #cond " " #expected, __LINE__)
+	check_type(value cond expected, value, expected, #value " " #cond " " #expected, __LINE__)
+
+static void
+check_single_type(const char *decl, SQLSMALLINT expected_type, SQLLEN expected_size, SQLSMALLINT expected_digits, SQLSMALLINT expected_scale)
+{
+	char *sql;
+	SQLSMALLINT num_params;
+	SQLSMALLINT sql_type;
+	SQLULEN size;
+	SQLSMALLINT digits, scale, nullable, count;
+	SQLHDESC ipd, apd;
+	SQLINTEGER ind;
+
+	odbc_reset_statement();
+
+	odbc_command("DROP TABLE describe");
+	sql = odbc_buf_asprintf(&odbc_buf, "CREATE TABLE describe(i int NOT NULL, col %s NULL)", decl);
+	odbc_command(sql);
+
+	// TODO invalid query CHKPrepare(T("INSERT INTO describe(i, col) VALUES(?, ?"), SQL_NTS, "S");
+	CHKPrepare(T("INSERT INTO describe(i, col) VALUES(?, ?)"), SQL_NTS, "S");
+
+	CHKNumParams(&num_params, "S");
+	check_int(num_params, ==, 2);
+
+	CHKGetStmtAttr(SQL_ATTR_IMP_PARAM_DESC, &ipd, sizeof(ipd), &ind, "S");
+	CHKGetStmtAttr(SQL_ATTR_APP_PARAM_DESC, &apd, sizeof(apd), &ind, "S");
+
+	/* check we have no parameters on IPD and APD */
+	CHKGetDescField(ipd, 0, SQL_DESC_COUNT, &count, sizeof(count), &ind, "S");
+	check_int(count, ==, 0);
+	CHKGetDescField(apd, 0, SQL_DESC_COUNT, &count, sizeof(count), &ind, "S");
+	check_int(count, ==, 0);
+
+	/* get some parameters */
+	CHKDescribeParam(2, &sql_type, &size, &digits, &nullable, "S");
+	check_type(sql_type, ==, expected_type);
+	check_int(size, ==, expected_size);
+	check_int(digits, ==, expected_digits);
+	check_int(nullable, ==, SQL_TRUE);
+//	CHKGetDescField(ipd, 2, SQL_DESC_TYPE, &sql_type, sizeof(SQLSMALLINT), &ind, "S");
+//	check_type(sql_type, ==, expected_type);
+	CHKGetDescField(ipd, 2, SQL_DESC_CONCISE_TYPE, &sql_type, sizeof(SQLSMALLINT), &ind, "S");
+	check_type(sql_type, ==, expected_type);
+	CHKGetDescField(ipd, 2, SQL_DESC_LENGTH, &size, sizeof(SQLULEN), &ind, "S");
+	check_int(size, ==, expected_size);
+	CHKGetDescField(ipd, 2, SQL_DESC_PRECISION, &digits, sizeof(SQLSMALLINT), &ind, "S");
+	/* TODO sligthly difference with MS driver about descriptor handling */
+//	if (!odbc_driver_is_freetds())
+//		check_int(digits, ==, expected_digits);
+	CHKGetDescField(ipd, 2, SQL_DESC_SCALE, &scale, sizeof(SQLSMALLINT), &ind, "S");
+	check_int(scale, ==, expected_scale);
+
+	odbc_reset_statement();
+	ODBC_FREE();
+}
 
 TEST_MAIN()
 {
@@ -273,6 +331,16 @@ TEST_MAIN()
 	check_int(digits, ==, 0);
 	check_int(nullable, ==, SQL_NULLABLE);
 
+	check_single_type("TEXT", SQL_LONGVARCHAR, 0x7fffffff, 0, 0);
+	check_single_type("NTEXT", SQL_WLONGVARCHAR, 0x3fffffff, 0, 0);
+	check_single_type("MONEY", SQL_DECIMAL, 19, 4, 4);
+	check_single_type("SMALLMONEY", SQL_DECIMAL, 10, 4, 4);
+//	check_single_type("VARCHAR(MAX)", SQL_VARCHAR, 0, 0, 0);
+//	check_single_type("NVARCHAR(MAX)", SQL_WVARCHAR, 0, 0, 0);
+//	check_single_type("DATETIME", SQL_TYPE_TIMESTAMP, 23, 3, 3);
+//	check_single_type("SMALLDATETIME", SQL_TYPE_TIMESTAMP, 16, 0, 0);
+//	check_single_type("DATETIME2(5)", SQL_TYPE_TIMESTAMP, 25, 5, 5);
+
 	// TODO try to understand which output get into sql type and others
 	// suggested_tds_type_id for type
 	// also suggested_precision and sugested_scale (like NUMERIC but also for INT)
@@ -283,6 +351,8 @@ TEST_MAIN()
 	// TODO check if query cannot return types (see examples from MS
 	// sp_describe_undeclared_parameters)
 	// For instance SELECT 1 WHERE ? = ?
+
+	// TODO check stored procedure calls not returning value
 
 	/*****************************************************************/
 
