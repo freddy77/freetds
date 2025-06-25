@@ -30,6 +30,7 @@ HOST=192.168.122.76
 SRV=sqlexpress
 SRV=sql2008
 SRV=docker
+SRV=mssql2025
 # freetds/mssql/ncli/ncli10
 DRIVER=ncli10
 
@@ -50,6 +51,7 @@ else
 	SERVER="192.168.122.76,1032"
 	SERVER="192.168.122.1,12345"
 #	SERVER="172.17.0.2,1433"
+	SERVER="127.0.0.1,1433"
 fi
 
 # find test directory
@@ -156,8 +158,8 @@ for F in $DIR/src/odbc/unittests/*.exe; do
 			FN=".libs/$F"
 		fi
 		cp "$DIR/src/odbc/unittests/$FN.exe" "ftds/$F.exe"
-		if [ -r "$DIR/src/odbc/unittests/$F.in" ]; then
-			cp "$DIR/src/odbc/unittests/$F.in" ftds/ 2> /dev/null
+		if [ -r "./src/odbc/unittests/$F.in" ]; then
+			cp "./src/odbc/unittests/$F.in" ftds/ 2> /dev/null
 		fi
 		$STRIP "ftds/$F.exe"
 
