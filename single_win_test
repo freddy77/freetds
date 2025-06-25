@@ -3,8 +3,8 @@
 go_win() {
 	local test_name="$1"
 	# we don't care about driver, we are going to use MS one
-	(cd freetds-1.5.dev.20241208/src/odbc/ && make -j4 &> /dev/null)
-	(cd freetds-1.5.dev.20241208/src/odbc/unittests/ && make "${test_name}.exe")
+	(cd freetds-1.5.dev.20250227/src/odbc/ && make -j4 &> /dev/null)
+	(cd freetds-1.5.dev.20250227/src/odbc/unittests/ && make "${test_name}.exe")
 	./wintests.sh "$test_name" &&
 	rm -f out_win.txt
 	ln ncli10-$(date +%Y%m%d)/*/"$test_name.txt" out_win.txt
