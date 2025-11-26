@@ -602,7 +602,7 @@ unix_to_nt_time(uint64_t * nt, struct timeval *tv)
 }
 
 void
-tds_calc_cbt_from_tls_unique(unsigned char *tls_unique_buf, size_t tls_unique_len, unsigned char cbt[16])
+tds_calc_cbt_from_tls_unique(const void *tls_unique_buf, size_t tls_unique_len, unsigned char cbt[16])
 {
 	MD5_CTX md5_ctx;
 	unsigned char channel_binding_struct[20 + 11];
