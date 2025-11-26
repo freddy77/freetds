@@ -273,14 +273,12 @@ tds_sspi_get_channel_binding(TDSSOCKET* tds)
 	cb->cbApplicationDataLength = app_data_len;
 	cb->dwApplicationDataOffset = struct_offset;
 
-	memcpy((char*)cb + struct_offset, "tls-unique:", 11);
-	memcpy((char*)cb + struct_offset + 11, tls_unique_buf, tls_unique_len);
+	memcpy((char *) cb + struct_offset, "tls-unique:", 11);
+	memcpy((char *) cb + struct_offset + 11, tls_unique_buf, tls_unique_len);
 
-	tdsdump_dump_buf(TDS_DBG_NETWORK, "SEC_CHANNEL_BINDINGS",
-		(const unsigned char*)cb, struct_offset + app_data_len);
-	tdsdump_dump_buf(TDS_DBG_NETWORK,
-		"SEC_CHANNEL_BINDINGS application_data",
-		((const unsigned char*)cb)+cb->dwApplicationDataOffset, cb->cbApplicationDataLength);
+	tdsdump_dump_buf(TDS_DBG_NETWORK, "SEC_CHANNEL_BINDINGS", cb, struct_offset + app_data_len);
+	tdsdump_dump_buf(TDS_DBG_NETWORK, "SEC_CHANNEL_BINDINGS application_data",
+			 ((char *) cb) + cb->dwApplicationDataOffset, cb->cbApplicationDataLength);
 	return cb;
 }
 
