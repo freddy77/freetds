@@ -148,6 +148,7 @@ tds_sspi_handle_next(TDSSOCKET *tds, TDSAUTHENTICATION *tds_auth, size_t len)
 	uint8_t *auth_buf;
 	SecBuffer in_buffers[2];
 	unsigned long in_buffers_len = 1;
+	unsigned long cb_len;
 
 	TDSSSPIAUTH *auth = (TDSSSPIAUTH *) tds_auth;
 
@@ -158,10 +159,6 @@ tds_sspi_handle_next(TDSSOCKET *tds, TDSAUTHENTICATION *tds_auth, size_t len)
 	if (!auth_buf)
 		return TDS_FAIL;
 	tds_get_n(tds, auth_buf, (int)len);
-
-	unsigned long cb_len = TDS_CALC_CB_SIZE(auth->cb);
-	if (cb_len > 0)
-		in_buffers_len++;
 
 	/* free previously allocated buffer */
 	if (auth->tds_auth.packet) {
@@ -178,7 +175,9 @@ tds_sspi_handle_next(TDSSOCKET *tds, TDSAUTHENTICATION *tds_auth, size_t len)
 	in_buffers[0].pvBuffer   = auth_buf;
 	in_buffers[0].cbBuffer = (ULONG)len;
 
+	cb_len = TDS_CALC_CB_SIZE(auth->cb);
 	if (cb_len > 0) {
+		in_buffers_len++;
 		in_buffers[1].BufferType = SECBUFFER_CHANNEL_BINDINGS;
 		in_buffers[1].cbBuffer = cb_len;
 		in_buffers[1].pvBuffer = auth->cb;
