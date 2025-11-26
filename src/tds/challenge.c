@@ -39,15 +39,12 @@
 #include <freetds/bytes.h>
 #include <freetds/utils/string.h>
 #include <freetds/iconv.h>
-#include <freetds/replacements.h>
-#include <freetds/tds.h>
-#include <freetds/time.h>
 #include <freetds/utils.h>
-#include <freetds/utils/des.h>
-#include <freetds/utils/hmac_md5.h>
 #include <freetds/utils/md4.h>
 #include <freetds/utils/md5.h>
-#include <freetds/utils/string.h>
+#include <freetds/utils/hmac_md5.h>
+#include <freetds/utils/des.h>
+#include <freetds/replacements.h>
 #include <freetds/tls.h>
 
 /**
