@@ -689,7 +689,7 @@ add_cbt_data(TDSNTLMAUTH *auth, unsigned char **names_blob, int *names_blob_len,
 	TDS_PUT_UA2LE(cbt_av_pair, 0x000A);	/* AvId = 0xA (little endian) */
 	TDS_PUT_UA2LE(cbt_av_pair + 2, 16);	/* AvLen = 16 (little endian) */
 	memcpy(cbt_av_pair + 4, auth->cbt, 16);	/* CBT (16 bytes) */
-	memset(cbt_av_pair + 20, 0, 4);	// Terminator
+	memset(cbt_av_pair + 20, 0, 4);	/* Terminator */
 
 	tdsdump_dump_buf(TDS_DBG_INFO1, "New names_blob\n", new_names_blob, new_blob_len);
 	/* Update names_blob and length */
