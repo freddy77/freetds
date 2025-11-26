@@ -665,6 +665,7 @@ add_cbt_data(TDSSOCKET *tds, unsigned char **names_blob, int *names_blob_len, in
 	int target_info_offset;
 	unsigned char *cbt_av_pair;
 	unsigned char cbt[16];
+	int rc;
 
 	if (!tds->conn || !tds->conn->tls_session) {
 		/* No TLS session, skip channel binding */
@@ -688,7 +689,6 @@ add_cbt_data(TDSSOCKET *tds, unsigned char **names_blob, int *names_blob_len, in
 	}
 #elif defined(HAVE_GNUTLS)
 	gnutls_datum_t unique;
-	int rc;
 
 	rc = gnutls_session_channel_binding((gnutls_session_t) tds->conn->tls_session, GNUTLS_CB_TLS_UNIQUE, &unique);
 	if (rc) {
