@@ -771,15 +771,15 @@ tds_ntlm_handle_next(TDSSOCKET *tds, TDSAUTHENTICATION *tds_auth TDS_UNUSED, siz
 
 		/* read Target Info if possible */
 		if (target_info_len > 0 && target_info_offset >= where && target_info_offset + target_info_len <= length) {
+			uint32_t terminator;
+
 			tds_get_n(tds, NULL, target_info_offset - where);
 			where = target_info_offset;
 
-			/*
-			 * the + 4 came from blob structure, after Target Info 4
-			 * additional reserved bytes must be present
-			 * Search "davenport port"
-			 * (currently http://davenport.sourceforge.net/ntlm.html)
-			 */
+			/* target info must include terminator */
+			if (target_info_len < 4)
+				return TDS_FAIL;
+
 			names_blob_len = TDS_OFFSET(names_blob_prefix_t, target_info) + target_info_len;
 
 			/* read Target Info */
@@ -789,6 +789,11 @@ tds_ntlm_handle_next(TDSSOCKET *tds, TDSAUTHENTICATION *tds_auth TDS_UNUSED, siz
 
 			fill_names_blob_prefix((names_blob_prefix_t *) names_blob);
 			tds_get_n(tds, names_blob + TDS_OFFSET(names_blob_prefix_t, target_info), target_info_len);
+			terminator = TDS_GET_UA4(names_blob + TDS_OFFSET(names_blob_prefix_t, target_info) + target_info_len - 4);
+			if (terminator != 0) {
+				free(names_blob);
+				return TDS_FAIL;
+			}
 			where += target_info_len;
 
 			/* Add channel binding token (CBT) AV_PAIR to target_info in names_blob */
