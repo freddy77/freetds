@@ -395,13 +395,13 @@ tds_gss_get_channel_binding(TDSSOCKET *tds)
 	cb->application_data.length = tls_unique_len + 11;
 
 	memcpy(cb->application_data.value, "tls-unique:", 11);
-	memcpy(cb->application_data.value + 11, tls_unique_buf, tls_unique_len);
+	memcpy((char *) cb->application_data.value + 11, tls_unique_buf, tls_unique_len);
 
 	tdsdump_dump_buf(TDS_DBG_NETWORK, "gss_channel_bindings_struct",
-			 (const unsigned char *) cb, sizeof(struct gss_channel_bindings_struct));
+			 cb, sizeof(struct gss_channel_bindings_struct));
 	tdsdump_dump_buf(TDS_DBG_NETWORK,
 			 "gss_channel_bindings_struct.application_data",
-			 (const unsigned char *) cb->application_data.value, cb->application_data.length);
+			 cb->application_data.value, cb->application_data.length);
 	return cb;
 }
 
