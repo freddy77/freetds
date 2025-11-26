@@ -40,14 +40,6 @@
 #if HAVE_SSPI
 #define SECURITY_WIN32
 
-#if defined(HAVE_OPENSSL)
-#include <openssl/ssl.h>
-#endif
-
-#if defined(HAVE_GNUTLS)
-#include <gnutls/gnutls.h>
-#endif
-
 #include <freetds/windows.h>
 #include <security.h>
 #include <sspi.h>
@@ -60,6 +52,7 @@
 #include <freetds/bool.h>
 #include <freetds/replacements.h>
 #include <freetds/iconv.h>
+#include <freetds/tls.h>
 
 /**
  * \ingroup libtds
@@ -259,48 +252,20 @@ convert_to_ucs2le_string(TDSSOCKET * tds, const char *s, size_t len, WCHAR *out,
 static PSEC_CHANNEL_BINDINGS
 tds_sspi_get_channel_binding(TDSSOCKET* tds)
 {
-	/* Check that we use tls session */
-	if (!tds || !tds->conn || !tds->conn->tls_session) {
-		tdsdump_log(TDS_DBG_NETWORK, "tds_sspi_get_channel_binding: no tls session\n");
-		return NULL;
-	}
-
-	/* Get tls-unique from OpenSSL */
 	unsigned char tls_unique_buf[256];
-	size_t tls_unique_len = 0;
+	size_t tls_unique_len;
+	const size_t struct_offset = sizeof(SEC_CHANNEL_BINDINGS);
+	size_t app_data_len;
+	PSEC_CHANNEL_BINDINGS cb;
 
-#if defined(HAVE_OPENSSL)
-	SSL* ssl = (SSL*)tds->conn->tls_session;
-
-	tls_unique_len = SSL_get_finished(ssl, tls_unique_buf, sizeof(tls_unique_buf));
-	if (tls_unique_len == 0) {
-		tls_unique_len = SSL_get_peer_finished(ssl, tls_unique_buf, sizeof(tls_unique_buf));
-	}
-#endif
-
-#if defined(HAVE_GNUTLS)
-	gnutls_datum_t unique;
-	int rc;
-
-	rc = gnutls_session_channel_binding((gnutls_session_t)tds->conn->tls_session, GNUTLS_CB_TLS_UNIQUE, &unique);
-	if (rc) {
-		tdsdump_log(TDS_DBG_NETWORK, "tds_sspi_get_channel_binding: failed to get tls-unique: %s\n", gnutls_strerror(rc));
+	/* Get tls-unique */
+	tls_unique_len = tds_ssl_get_cb(tds->conn, tls_unique_buf, sizeof(tls_unique_buf));
+	if (tls_unique_len == 0)
 		return NULL;
-	}
-	tls_unique_len = unique.size;
-	memcpy(tls_unique_buf, unique.data, unique.size);
-#endif
 
-	if (tls_unique_len == 0) {
-		tdsdump_log(TDS_DBG_NETWORK, "tds_sspi_get_channel_binding: failed to get tls-unique\n");
-		return NULL;
-	}
+	app_data_len = 11 + tls_unique_len;
 
-	size_t struct_offset = sizeof(SEC_CHANNEL_BINDINGS);
-	size_t app_data_len = 11 + tls_unique_len;
-
-	PSEC_CHANNEL_BINDINGS cb = ((SEC_CHANNEL_BINDINGS*)calloc(1, struct_offset + app_data_len));
-
+	cb = (SEC_CHANNEL_BINDINGS*) calloc(1, struct_offset + app_data_len);
 	if (!cb) {
 		tdsdump_log(TDS_DBG_NETWORK, "tds_sspi_get_channel_binding: failed to allocate channel bindings\n");
 		return NULL;
