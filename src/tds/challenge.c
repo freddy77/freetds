@@ -561,6 +561,8 @@ tds7_send_auth(TDSSOCKET * tds,
 	return tds_flush_packet(tds);
 }
 
+#define AV_PAIR_CBT_BYTES 20
+
 typedef struct tds_ntlm_auth
 {
 	TDSAUTHENTICATION tds_auth;
@@ -651,52 +653,38 @@ get_cbt(TDSSOCKET *tds, TDSNTLMAUTH *auth)
 /**
  * Add channel binding token (CBT) AV_PAIR to target_info in names_blob
  * @param tds TDSSOCKET structure
- * @param names_blob pointer to names_blob buffer (may be reallocated)
+ * @param names_blob pointer to names_blob buffer
  * @param names_blob_len pointer to current length (will be updated)
  * @return TDS_SUCCESS or TDS_FAIL
  */
-static TDSRET
-add_cbt_data(TDSNTLMAUTH *auth, unsigned char **names_blob, int *names_blob_len, int target_info_len)
+static void
+add_cbt_data(TDSNTLMAUTH *auth, unsigned char *names_blob, int *names_blob_len, int target_info_len)
 {
-	unsigned char *new_names_blob;
 	int new_blob_len;
 	int target_info_offset;
 	unsigned char *cbt_av_pair;
 
 	/* No CBT, skip channel binding */
 	if (!auth->has_cbt)
-		return TDS_SUCCESS;
+		return;
 
 	target_info_offset = TDS_OFFSET(names_blob_prefix_t, target_info);
-	tdsdump_dump_buf(TDS_DBG_INFO1, "Old names_blob before reallocation\n", *names_blob, *names_blob_len);
 
-	/* Reallocate names_blob to add CBT AV_PAIR (4 bytes header + 16 bytes CBT) */
+	/* Add CBT AV_PAIR (4 bytes header + 16 bytes CBT) */
 	new_blob_len = *names_blob_len + 4 + 16;	/* +20 for CBT AV_PAIR */
 
-	// FIXME: Some strange behaviout, we have redundant 4 bytes at the end of the names_blob
-	new_blob_len -= 4;
-	target_info_len -= 4;
-
-	new_names_blob = realloc(*names_blob, new_blob_len);
-	if (!new_names_blob) {
-		return TDS_FAIL;
-	}
-	tdsdump_log(TDS_DBG_INFO1, "Reallocating names_blob from %d bytes to %d bytes\n", *names_blob_len, new_blob_len);
-
 	/* Insert CBT AV_PAIR */
-	cbt_av_pair = new_names_blob + target_info_offset + target_info_len;
+	/* The -4 is to override the old terminator */
+	cbt_av_pair = names_blob + target_info_offset + target_info_len - 4;
 
 	TDS_PUT_UA2LE(cbt_av_pair, 0x000A);	/* AvId = 0xA (little endian) */
 	TDS_PUT_UA2LE(cbt_av_pair + 2, 16);	/* AvLen = 16 (little endian) */
 	memcpy(cbt_av_pair + 4, auth->cbt, 16);	/* CBT (16 bytes) */
 	memset(cbt_av_pair + 20, 0, 4);	/* Terminator */
 
-	tdsdump_dump_buf(TDS_DBG_INFO1, "New names_blob\n", new_names_blob, new_blob_len);
-	/* Update names_blob and length */
-	*names_blob = new_names_blob;
+	tdsdump_dump_buf(TDS_DBG_INFO1, "New names_blob\n", names_blob, new_blob_len);
+	/* Update names_blob_len */
 	*names_blob_len = new_blob_len;
-
-	return TDS_SUCCESS;
 }
 
 static void
@@ -792,10 +780,10 @@ tds_ntlm_handle_next(TDSSOCKET *tds, TDSAUTHENTICATION *tds_auth TDS_UNUSED, siz
 			 * Search "davenport port"
 			 * (currently http://davenport.sourceforge.net/ntlm.html)
 			 */
-			names_blob_len = TDS_OFFSET(names_blob_prefix_t, target_info) + target_info_len + 4;
+			names_blob_len = TDS_OFFSET(names_blob_prefix_t, target_info) + target_info_len;
 
 			/* read Target Info */
-			names_blob = tds_new0(unsigned char, names_blob_len);
+			names_blob = tds_new0(unsigned char, names_blob_len + AV_PAIR_CBT_BYTES);
 			if (!names_blob)
 				return TDS_FAIL;
 
@@ -804,11 +792,7 @@ tds_ntlm_handle_next(TDSSOCKET *tds, TDSAUTHENTICATION *tds_auth TDS_UNUSED, siz
 			where += target_info_len;
 
 			/* Add channel binding token (CBT) AV_PAIR to target_info in names_blob */
-			rc = add_cbt_data(auth, &names_blob, &names_blob_len, target_info_len);
-			if (TDS_FAILED(rc)) {
-				tdsdump_log(TDS_DBG_NETWORK, "tds_ntlm_handle_next: failed to add CBT AV_PAIR, skipping CBT\n");
-				rc = TDS_SUCCESS;
-			}
+			add_cbt_data(auth, names_blob, &names_blob_len, target_info_len);
 		}
 	}
 	/* discard anything left */
