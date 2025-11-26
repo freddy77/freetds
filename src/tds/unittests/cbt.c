@@ -1,3 +1,6 @@
+#undef NDEBUG
+#include "../challenge.c"
+
 #include "common.h"
 
 static char *
