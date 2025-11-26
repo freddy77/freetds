@@ -165,15 +165,15 @@ tds_sspi_handle_next(TDSSOCKET *tds, TDSAUTHENTICATION *tds_auth, size_t len)
 		sec_fn->FreeContextBuffer(auth->tds_auth.packet);
 		auth->tds_auth.packet = NULL;
 	}
-	in_desc.ulVersion  = out_desc.ulVersion  = SECBUFFER_VERSION;
+	in_desc.ulVersion = out_desc.ulVersion = SECBUFFER_VERSION;
 	in_desc.cBuffers = in_buffers_len;
-	in_desc.pBuffers   = in_buffers;
-	out_desc.pBuffers   = &out_buf;
+	in_desc.pBuffers = in_buffers;
+	out_desc.pBuffers = &out_buf;
 	out_desc.cBuffers = 1;
 
 	in_buffers[0].BufferType = SECBUFFER_TOKEN;
-	in_buffers[0].pvBuffer   = auth_buf;
-	in_buffers[0].cbBuffer = (ULONG)len;
+	in_buffers[0].pvBuffer = auth_buf;
+	in_buffers[0].cbBuffer = (ULONG) len;
 
 	cb_len = TDS_CALC_CB_SIZE(auth->cb);
 	if (cb_len > 0) {
@@ -243,7 +243,7 @@ convert_to_ucs2le_string(TDSSOCKET * tds, const char *s, size_t len, WCHAR *out,
 
 
 static PSEC_CHANNEL_BINDINGS
-tds_sspi_get_channel_binding(TDSSOCKET* tds)
+tds_sspi_get_channel_binding(TDSSOCKET *tds)
 {
 	unsigned char tls_unique_buf[256];
 	size_t tls_unique_len;
@@ -258,7 +258,7 @@ tds_sspi_get_channel_binding(TDSSOCKET* tds)
 
 	app_data_len = 11 + tls_unique_len;
 
-	cb = (SEC_CHANNEL_BINDINGS*) calloc(1, struct_offset + app_data_len);
+	cb = (SEC_CHANNEL_BINDINGS *) calloc(1, struct_offset + app_data_len);
 	if (!cb) {
 		tdsdump_log(TDS_DBG_NETWORK, "tds_sspi_get_channel_binding: failed to allocate channel bindings\n");
 		return NULL;

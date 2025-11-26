@@ -5,6 +5,7 @@ bin2ascii(char *dest, const void *data, size_t len)
 {
 	char *s = dest;
 	const unsigned char *src = (const unsigned char *) data;
+
 	for (; len > 0; --len, s += 2)
 		sprintf(s, "%02x", *src++);
 	*s = 0;

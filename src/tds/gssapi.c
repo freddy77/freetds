@@ -115,7 +115,7 @@ tds_gss_free(TDSCONNECTION *conn TDS_UNUSED, TDSAUTHENTICATION *tds_auth)
 	return TDS_SUCCESS;
 }
 
-static TDSRET tds_gss_continue(TDSSOCKET *tds, TDSGSSAUTH *auth, gss_buffer_desc *token_ptr);
+static TDSRET tds_gss_continue(TDSSOCKET * tds, TDSGSSAUTH * auth, gss_buffer_desc * token_ptr);
 
 static TDSRET
 tds7_gss_handle_next(TDSSOCKET *tds, TDSAUTHENTICATION *auth, size_t len)
@@ -367,6 +367,7 @@ tds_gss_get_channel_binding(TDSSOCKET *tds)
 		return GSS_C_NO_CHANNEL_BINDINGS;
 
 	cb = tds_new0(struct gss_channel_bindings_struct, 1);
+
 	if (!cb) {
 		tdsdump_log(TDS_DBG_NETWORK, "tds_gss_get_channel_binding: failed to allocate channel bindings\n");
 		return GSS_C_NO_CHANNEL_BINDINGS;
@@ -383,11 +384,9 @@ tds_gss_get_channel_binding(TDSSOCKET *tds)
 	memcpy(cb->application_data.value, "tls-unique:", 11);
 	memcpy((char *) cb->application_data.value + 11, tls_unique_buf, tls_unique_len);
 
-	tdsdump_dump_buf(TDS_DBG_NETWORK, "gss_channel_bindings_struct",
-			 cb, sizeof(struct gss_channel_bindings_struct));
+	tdsdump_dump_buf(TDS_DBG_NETWORK, "gss_channel_bindings_struct", cb, sizeof(struct gss_channel_bindings_struct));
 	tdsdump_dump_buf(TDS_DBG_NETWORK,
-			 "gss_channel_bindings_struct.application_data",
-			 cb->application_data.value, cb->application_data.length);
+			 "gss_channel_bindings_struct.application_data", cb->application_data.value, cb->application_data.length);
 	return cb;
 }
 
@@ -436,7 +435,9 @@ tds_gss_continue(TDSSOCKET *tds, TDSGSSAUTH *auth, gss_buffer_desc *token_ptr)
 
 	cb = tds_gss_get_channel_binding(tds);
 
-	maj_stat = gss_init_sec_context(&min_stat, GSS_C_NO_CREDENTIAL, &auth->gss_context, auth->target_name, GSS_C_NULL_OID, gssapi_flags, 0, cb, token_ptr, &pmech, &send_tok, &ret_flags, NULL);	/* ignore time_rec */
+	maj_stat =
+		gss_init_sec_context(&min_stat, GSS_C_NO_CREDENTIAL, &auth->gss_context, auth->target_name, GSS_C_NULL_OID,
+				     gssapi_flags, 0, cb, token_ptr, &pmech, &send_tok, &ret_flags, NULL /* ignore time_rec */ );
 
 	tdsdump_log(TDS_DBG_NETWORK, "gss_init_sec_context: actual mechanism at %p\n", pmech);
 	if (pmech && pmech->elements) {

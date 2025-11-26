@@ -569,7 +569,7 @@ typedef struct tds_ntlm_auth
 } TDSNTLMAUTH;
 
 static TDSRET
-tds_ntlm_free(TDSCONNECTION *conn TDS_UNUSED, TDSAUTHENTICATION *tds_auth)
+tds_ntlm_free(TDSCONNECTION * conn TDS_UNUSED, TDSAUTHENTICATION * tds_auth)
 {
 	TDSNTLMAUTH *auth = (TDSNTLMAUTH *) tds_auth;
 
@@ -726,7 +726,7 @@ tds_ntlm_handle_next(TDSSOCKET *tds, TDSAUTHENTICATION *tds_auth TDS_UNUSED, siz
 {
 	TDSNTLMAUTH *auth = (TDSNTLMAUTH *) tds_auth;
 
-	const int length = (int) len;
+	const int length = (int)len;
 	unsigned char nonce[8];
 	uint32_t flags;
 	int where;
@@ -796,7 +796,6 @@ tds_ntlm_handle_next(TDSSOCKET *tds, TDSAUTHENTICATION *tds_auth TDS_UNUSED, siz
 
 			/* read Target Info */
 			names_blob = tds_new0(unsigned char, names_blob_len);
-
 			if (!names_blob)
 				return TDS_FAIL;
 
@@ -883,7 +882,7 @@ tds_ntlm_get_auth(TDSSOCKET * tds)
 	/* hostname info */
 	TDS_PUT_A2LE(packet + 24, host_name_len);
 	TDS_PUT_A2LE(packet + 26, host_name_len);
-	TDS_PUT_A4(packet + 28, TDS_HOST4LE(40));
+	TDS_PUT_A4  (packet + 28, TDS_HOST4LE(40));
 
 	/*
 	 * here XP put version like 05 01 28 0a (5.1.2600),
@@ -903,3 +902,4 @@ tds_ntlm_get_auth(TDSSOCKET * tds)
 }
 
 /** @} */
+
