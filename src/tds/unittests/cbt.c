@@ -17,11 +17,7 @@ calc_cbt_from_tls_unique_test(const char *tls_unique, const char *cbt)
 	unsigned char cbt_buf[16];
 	char cbt_str[33];
 
-	TDSRET rc = tds_calc_cbt_from_tls_unique((unsigned char *) tls_unique, strlen(tls_unique), cbt_buf);
-	if (TDS_FAILED(rc)) {
-		fprintf(stderr, "Failed to calculate CBT from TLS unique: %s\n", tls_unique);
-		exit(1);
-	}
+	tds_calc_cbt_from_tls_unique((unsigned char *) tls_unique, strlen(tls_unique), cbt_buf);
 
 	/* convert to hex string and compare */
 	bin2ascii(cbt_str, cbt_buf, 16);
