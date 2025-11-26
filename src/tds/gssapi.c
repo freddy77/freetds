@@ -70,14 +70,8 @@
 #include <freetds/replacements.h>
 #include <freetds/tds.h>
 #include <freetds/utils/string.h>
+#include <freetds/tls.h>
 
-#if defined(HAVE_OPENSSL)
-#include <openssl/ssl.h>
-#endif
-
-#if defined(HAVE_GNUTLS)
-#include <gnutls/gnutls.h>
-#endif
 /**
  * \ingroup libtds
  * \defgroup auth Authentication
@@ -377,50 +371,21 @@ tds_error_message(OM_uint32 e)
 static gss_channel_bindings_t
 tds_gss_get_channel_binding(TDSSOCKET *tds)
 {
-	/* Check that we use tls session */
-	if (!tds->conn->tls_session) {
-		tdsdump_log(TDS_DBG_NETWORK, "tds_gss_get_channel_binding: no tls session\n");
-		return GSS_C_NO_CHANNEL_BINDINGS;
-	}
-
 	/* Get tls-unique from OpenSSL */
 	unsigned char tls_unique_buf[256];
-	size_t tls_unique_len = 0;
+	size_t tls_unique_len;
+	gss_channel_bindings_t cb;
 
-#if defined(HAVE_OPENSSL)
-	SSL *ssl = (SSL *) tds->conn->tls_session;
-
-	tls_unique_len = SSL_get_finished(ssl, tls_unique_buf, sizeof(tls_unique_buf));
-	if (tls_unique_len == 0) {
-		tls_unique_len = SSL_get_peer_finished(ssl, tls_unique_buf, sizeof(tls_unique_buf));
-	}
-#endif
-
-#if defined(HAVE_GNUTLS)
-	gnutls_datum_t unique;
-	int rc;
-
-	rc = gnutls_session_channel_binding((gnutls_session_t) tds->conn->tls_session, GNUTLS_CB_TLS_UNIQUE, &unique);
-	if (rc) {
-		tdsdump_log(TDS_DBG_NETWORK, "tds_gss_get_channel_binding: failed to get tls-unique: %s\n", gnutls_strerror(rc));
+	tls_unique_len = tds_ssl_get_cb(tds->conn, tls_unique_buf, sizeof(tls_unique_buf));
+	if (tls_unique_len == 0)
 		return GSS_C_NO_CHANNEL_BINDINGS;
-	}
-	tls_unique_len = unique.size;
-	memcpy(tls_unique_buf, unique.data, unique.size);
-#endif
 
-	if (tls_unique_len == 0) {
-		tdsdump_log(TDS_DBG_NETWORK, "tds_gss_get_channel_binding: failed to get tls-unique\n");
-		return GSS_C_NO_CHANNEL_BINDINGS;
-	}
-
-	gss_channel_bindings_t cb = NULL;
 	cb = tds_new0(struct gss_channel_bindings_struct, 1);
-
 	if (!cb) {
 		tdsdump_log(TDS_DBG_NETWORK, "tds_gss_get_channel_binding: failed to allocate channel bindings\n");
 		return GSS_C_NO_CHANNEL_BINDINGS;
 	}
+
 	cb->initiator_addrtype = GSS_C_AF_UNSPEC;
 	cb->initiator_address.length = 0;
 	cb->acceptor_addrtype = GSS_C_AF_UNSPEC;
@@ -449,6 +414,7 @@ tds_gss_continue(TDSSOCKET *tds, struct tds_gss_auth *auth, gss_buffer_desc *tok
 	int gssapi_flags;
 	const char *msg = "???";
 	gss_OID pmech = GSS_C_NULL_OID;
+	gss_channel_bindings_t cb;
 
 	auth->last_stat = GSS_S_COMPLETE;
 
@@ -483,7 +449,7 @@ tds_gss_continue(TDSSOCKET *tds, struct tds_gss_auth *auth, gss_buffer_desc *tok
 	if (tds->login->mutual_authentication || IS_TDS7_PLUS(tds->conn))
 		gssapi_flags |= GSS_C_MUTUAL_FLAG;
 
-	gss_channel_bindings_t cb = tds_gss_get_channel_binding(tds);
+	cb = tds_gss_get_channel_binding(tds);
 
 	maj_stat = gss_init_sec_context(&min_stat, GSS_C_NO_CREDENTIAL, &auth->gss_context, auth->target_name, GSS_C_NULL_OID, gssapi_flags, 0, cb, token_ptr, &pmech, &send_tok, &ret_flags, NULL);	/* ignore time_rec */
 
