@@ -146,7 +146,7 @@ tds_sspi_handle_next(TDSSOCKET *tds, TDSAUTHENTICATION *tds_auth, size_t len)
 	ULONG attrs;
 	TimeStamp ts;
 	uint8_t *auth_buf;
-	PSecBuffer in_buffers;
+	SecBuffer in_buffers[2];
 	unsigned long in_buffers_len = 1;
 
 	TDSSSPIAUTH *auth = (TDSSSPIAUTH *) tds_auth;
@@ -160,14 +160,8 @@ tds_sspi_handle_next(TDSSOCKET *tds, TDSAUTHENTICATION *tds_auth, size_t len)
 	tds_get_n(tds, auth_buf, (int)len);
 
 	unsigned long cb_len = TDS_CALC_CB_SIZE(auth->cb);
-	if (cb_len > 0) {
+	if (cb_len > 0)
 		in_buffers_len++;
-	}
-
-	in_buffers = tds_new(SecBuffer, in_buffers_len);
-	if (!in_buffers) {
-		return TDS_FAIL;
-	}
 
 	/* free previously allocated buffer */
 	if (auth->tds_auth.packet) {
