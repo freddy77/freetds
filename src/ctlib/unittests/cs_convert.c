@@ -110,7 +110,7 @@ DoTest(
 	/* success */
 	return 0;
       Failed:
-	fprintf(stderr, "Test %s failed (got ret=%d len=%d)\n", err, (int) retcode, (int) reslen);
+	fprintf(stderr, "Test %s failed (got ret=%d len=%d expected ret=%d)\n", err, (int) retcode, (int) reslen, (int) tores);
 	fprintf(stderr, "line: %d\n  DO_TEST(decl=%s,\n"
 		"\t   fromtype=%s,fromdata=%s,fromlen=%s,\n"
 		"\t   totype=%s,tomaxlen=%s,\n"
@@ -131,21 +131,42 @@ TEST_MAIN()
 {
 	volatile CS_BIGINT one = 1;
 	bool verbose = true;
+	CS_CONNECTION *conn;
+	CS_COMMAND *cmd;
+	int i;
 
 	printf("%s: Testing conversion\n", __FILE__);
 
-	check_call(cs_ctx_alloc, (CS_VERSION_150, &ctx));
-	check_call(ct_init, (ctx, CS_VERSION_150));
+	check_call(try_ctlogin, (&ctx, &conn, &cmd, verbose));
+//	check_call(cs_ctx_alloc, (CS_VERSION_150, &ctx));
+
 	check_call(cs_config, (ctx, CS_SET, CS_MESSAGE_CB, (CS_VOID*) cslibmsg_cb, CS_UNUSED, NULL));
+
+	/* set different callback for the connection */
+	check_call(ct_callback, (NULL, conn, CS_SET, CS_CLIENTMSG_CB, (CS_VOID*) clientmsg_cb2));
 
 	/* TODO For each conversion test different values of fromlen and tolen */
 
 	/* 
 	 * * INT to everybody 
 	 */
+#if 1
+for (i = 0; i < 40; ++i) {
+#else
+for (i = 8; i < 40; i += 100) {
+#endif
+	printf("==================== type %d\n", i);
+	fflush(stdout);
+	fflush(stderr);
 	DO_TEST(CS_INT test = 12345;
-		CS_INT test2 = 12345,
-		CS_INT_TYPE, &test, sizeof(test), CS_INT_TYPE, sizeof(test2), CS_SUCCEED, &test2, sizeof(test2));
+		CS_CHAR test2[80] = { 0 },
+		i, &test, sizeof(test), CS_UNITEXT_TYPE, sizeof(test2), CS_SUCCEED, test2, sizeof(test2));
+	fflush(stdout);
+	fflush(stderr);
+}
+//		CS_INT_TYPE, &test, sizeof(test), CS_USHORT_TYPE, sizeof(test2), CS_FAIL, &test2, sizeof(test2));
+
+return 1;
 	DO_TEST(CS_INT test = 12345;
 		CS_INT test2 = 12345,
 		CS_INT_TYPE, &test, sizeof(test), CS_INT_TYPE, sizeof(test2) * 2, CS_SUCCEED, &test2, sizeof(test2));

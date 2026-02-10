@@ -2254,6 +2254,9 @@ _ct_get_client_type(const TDSCOLUMN *col, bool describe)
 	return _cs_convert_not_client(NULL, col, NULL, NULL);
 }
 
+/**
+ * @param tds socket if sending to server
+ */
 TDS_SERVER_TYPE
 _ct_get_server_type(TDSSOCKET *tds, int datatype)
 {
@@ -2290,6 +2293,7 @@ _ct_get_server_type(TDSSOCKET *tds, int datatype)
 	case CS_DATETIME4_TYPE:		return SYBDATETIME4;
 	case CS_NUMERIC_TYPE:		return SYBNUMERIC;
 	case CS_DECIMAL_TYPE:		return SYBDECIMAL;
+// structure in client
 	case CS_VARBINARY_TYPE:		return SYBVARBINARY;
 	case CS_TEXT_TYPE:		return SYBTEXT;
 	case CS_UNIQUE_TYPE:		return SYBUNIQUE;
@@ -2320,10 +2324,10 @@ _ct_get_server_type(TDSSOCKET *tds, int datatype)
 	case CS_SENSITIVITY_TYPE:
 	case CS_BOUNDARY_TYPE:
 	case CS_VOID_TYPE:
-	case CS_USHORT_TYPE:
-	case CS_BLOB_TYPE:
-	case CS_UNITEXT_TYPE:
-	case CS_XML_TYPE:
+	case CS_USHORT_TYPE: // ??? test these...
+	case CS_BLOB_TYPE: // ???
+	case CS_UNITEXT_TYPE: // ???
+	case CS_XML_TYPE: // ???
 	case CS_TEXTLOCATOR_TYPE:
 	case CS_IMAGELOCATOR_TYPE:
 	case CS_UNITEXTLOCATOR_TYPE:
