@@ -1274,6 +1274,19 @@ _bcp_read_hostfile(DBPROCESS *dbproc, TDSFILESTREAM *stream, bool *row_error, bo
 			"prefix_len = %d collen = %d column_len = %d\n",
 			hostcol->prefix_len, collen, hostcol->column_len);
 
+		/* Validate that data does not exceed expected maximum (could cause
+		 * wrong row length to be sent on wire) */
+		if (hostcol->column_len > 0 && collen > hostcol->column_len)
+		{
+			tdsdump_log(TDS_DBG_WARN,
+				"col %d: length %d exceeds field maximum %d\n",
+				i + 1, collen, (int)hostcol->column_len);
+			*row_error = true;
+			free(coldata);
+			dbperror(dbproc, SYBEBCOR, 0);
+			return FAIL;
+		}
+
 		col_start = tds_file_stream_tell(stream);
 
 		/*
