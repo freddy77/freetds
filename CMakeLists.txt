@@ -16,13 +16,13 @@ endif(COMMAND cmake_policy)
 
 set(PACKAGE freetds)
 unset(VERSION)
-if(EXISTS "${CMAKE_SOURCE_DIR}/configure")
-	file(STRINGS "${CMAKE_SOURCE_DIR}/configure" VER LIMIT_COUNT 1 REGEX "^[ 	]*VERSION[ 	]*=.*1[.]")
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/configure")
+	file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/configure" VER LIMIT_COUNT 1 REGEX "^[ 	]*VERSION[ 	]*=.*1[.]")
 	if(VER MATCHES "VERSION[ 	]*=[ 	]*'?([^' 	]+)")
 		set(VERSION ${CMAKE_MATCH_1})
 	endif()
 else()
-	file(STRINGS "${CMAKE_SOURCE_DIR}/configure.ac" VER LIMIT_COUNT 1 REGEX "^AC_INIT\\(FreeTDS,[ 	]*1[.].*\\)$")
+	file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/configure.ac" VER LIMIT_COUNT 1 REGEX "^AC_INIT\\(FreeTDS,[ 	]*1[.].*\\)$")
 	if(VER MATCHES "AC_INIT\\(FreeTDS,[ 	]*(.+)\\)$")
 		set(VERSION ${CMAKE_MATCH_1})
 	endif()
@@ -64,6 +64,7 @@ string(TIMESTAMP BUILD_NUMBER "( %Y - 2025 ) * 366 + 1%j - 1000")
 math(EXPR BUILD_NUMBER "${BUILD_NUMBER}")
 
 set(FREETDS_TOPDIR ${CMAKE_CURRENT_LIST_DIR})
+set(FREETDS_SOURCE_TOPDIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 enable_testing()
 if(CMAKE_GENERATOR MATCHES "^Visual Studio")
@@ -302,7 +303,7 @@ function(CHECK_STDIO_FUNCTION_EXISTS FUNCTION)
 		message(STATUS "Looking for ${FUNCTION}")
 		try_compile(${VARIABLE}
 			${CMAKE_BINARY_DIR}
-			${CMAKE_SOURCE_DIR}/misc/cmake_checks.c
+			${CMAKE_CURRENT_SOURCE_DIR}/misc/cmake_checks.c
 			COMPILE_DEFINITIONS ${CMAKE_REQUIRED_DEFINITIONS}
 			CMAKE_FLAGS -DCOMPILE_DEFINITIONS:STRING=${MACRO_CHECK_FUNCTION_DEFINITIONS}
 			OUTPUT_VARIABLE OUTPUT)
@@ -463,8 +464,8 @@ config_write("
 endif(WIN32)
 
 set(lib_BASE ${lib_RT} ${CMAKE_THREAD_LIBS_INIT})
-if(EXISTS "${CMAKE_SOURCE_DIR}/iconv/lib/iconv.lib")
-	set(lib_BASE ${lib_BASE} ${CMAKE_THREAD_LIBS_INIT} "${CMAKE_SOURCE_DIR}/iconv/lib/iconv.lib")
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/iconv/lib/iconv.lib")
+	set(lib_BASE ${lib_BASE} ${CMAKE_THREAD_LIBS_INIT} "${CMAKE_CURRENT_SOURCE_DIR}/iconv/lib/iconv.lib")
 	config_write("#define HAVE_ICONV 1\n\n")
 	config_write("#define ICONV_CONST \n\n")
 endif()
@@ -497,33 +498,33 @@ add_subdirectory(src/server)
 add_subdirectory(src/pool)
 
 configure_file(${CMAKE_BINARY_DIR}/include/config.h.in ${CMAKE_BINARY_DIR}/include/config.h)
-configure_file(${CMAKE_SOURCE_DIR}/include/tds_sysdep_public.h.in ${CMAKE_BINARY_DIR}/include/tds_sysdep_public.h)
-configure_file(${CMAKE_SOURCE_DIR}/include/freetds/sysdep_types.h.in ${CMAKE_BINARY_DIR}/include/freetds/sysdep_types.h)
-configure_file(${CMAKE_SOURCE_DIR}/include/freetds/version.h.in ${CMAKE_BINARY_DIR}/include/freetds/version.h)
-if(NOT EXISTS "${CMAKE_SOURCE_DIR}/configure" OR NOT EXISTS ${CMAKE_SOURCE_DIR}/src/odbc/version.rc)
-	configure_file(${CMAKE_SOURCE_DIR}/src/odbc/version.rc.in ${CMAKE_SOURCE_DIR}/src/odbc/version.rc)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/tds_sysdep_public.h.in ${CMAKE_BINARY_DIR}/include/tds_sysdep_public.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/freetds/sysdep_types.h.in ${CMAKE_BINARY_DIR}/include/freetds/sysdep_types.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/freetds/version.h.in ${CMAKE_BINARY_DIR}/include/freetds/version.h)
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/configure" OR NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src/odbc/version.rc)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/odbc/version.rc.in ${CMAKE_CURRENT_SOURCE_DIR}/src/odbc/version.rc)
 endif()
 
 
 set(FREETDS_PUBLIC_INCLUDE
-	${CMAKE_SOURCE_DIR}/include/bkpublic.h
-	${CMAKE_SOURCE_DIR}/include/cspublic.h
-	${CMAKE_SOURCE_DIR}/include/cstypes.h
-	${CMAKE_SOURCE_DIR}/include/ctpublic.h
-	${CMAKE_SOURCE_DIR}/include/sqldb.h
-	${CMAKE_SOURCE_DIR}/include/sqlfront.h
-	${CMAKE_SOURCE_DIR}/include/sybdb.h
-	${CMAKE_SOURCE_DIR}/include/sybfront.h
-	${CMAKE_SOURCE_DIR}/include/syberror.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/bkpublic.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/cspublic.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/cstypes.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/ctpublic.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/sqldb.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/sqlfront.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/sybdb.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/sybfront.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/syberror.h
 	${CMAKE_BINARY_DIR}/include/tds_sysdep_public.h)
 
 set(FREETDS_PUBLIC_INCLUDE_2
 	${CMAKE_BINARY_DIR}/include/freetds/version.h)
 
 set(FREETDS_CONF_FILES
-	${CMAKE_SOURCE_DIR}/freetds.conf
-	${CMAKE_SOURCE_DIR}/locales.conf
-	${CMAKE_SOURCE_DIR}/src/pool/pool.conf)
+	${CMAKE_CURRENT_SOURCE_DIR}/freetds.conf
+	${CMAKE_CURRENT_SOURCE_DIR}/locales.conf
+	${CMAKE_CURRENT_SOURCE_DIR}/src/pool/pool.conf)
 
 install(FILES ${FREETDS_PUBLIC_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(FILES ${FREETDS_PUBLIC_INCLUDE_2} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/freetds)

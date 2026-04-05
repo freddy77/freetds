@@ -10,7 +10,7 @@ if(PERL_FOUND AND NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tds_willconvert.h")
 		set(NULLNAME "NUL:")
 	endif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
-	set(ENC_SOURCE_DIR "${CMAKE_SOURCE_DIR}/include/freetds")
+	set(ENC_SOURCE_DIR "${FREETDS_SOURCE_TOPDIR}/include/freetds")
 
 	add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/tds_willconvert.h"
 		COMMAND ${PERL_EXECUTABLE} tds_willconvert.pl ../../include/freetds/proto.h > "${CMAKE_CURRENT_BINARY_DIR}/tds_willconvert.h"
@@ -40,7 +40,7 @@ else(PERL_FOUND AND NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tds_willconvert.h")
 		"${CMAKE_CURRENT_SOURCE_DIR}/tds_willconvert.h"
 		"${CMAKE_CURRENT_SOURCE_DIR}/num_limits.h"
 		"${CMAKE_CURRENT_SOURCE_DIR}/tds_types.h"
-		"${CMAKE_SOURCE_DIR}/include/freetds/encodings.h")
+		"${FREETDS_SOURCE_TOPDIR}/include/freetds/encodings.h")
 endif(PERL_FOUND AND NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tds_willconvert.h")
 
 if(WIN32)
