@@ -2182,6 +2182,9 @@ bcp_bind(DBPROCESS * dbproc, BYTE * varaddr, int prefixlen, DBINT varlen,
 		return FAIL;
 	}
 
+//	if (is_fixed_type(vartype)) {
+//		abort();
+//	}
 	if (is_fixed_type(vartype) && (varlen != -1 && varlen != 0)) {
 		tdsdump_log(TDS_DBG_FUNC, "bcp_bind(): varlen must be -1 or 0 for fixed type %d\n", vartype);
 		dbperror(dbproc, SYBETYPE, 0);

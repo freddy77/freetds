@@ -73,13 +73,16 @@ init(DBPROCESS * dbproc, const char *name)
 
 #define VARCHAR_BIND(x) \
 	bcp_bind( dbproc, (unsigned char *) &x, prefixlen, (DBINT) strlen(x), \
-		  NULL, termlen, SYBVARCHAR, col++ )
+		  "", 1, SYBVARCHAR, col++ )
 
 #define INT_BIND(x) \
-	bcp_bind( dbproc, (unsigned char *) &x, prefixlen, -1, NULL, termlen, SYBINT4,    col++ )
+	bcp_bind( dbproc, (unsigned char *) &x, prefixlen, 1, NULL, termlen, SYBINT4,    col++ )
 
 #define NULL_BIND(x, type) \
 	bcp_bind( dbproc, (unsigned char *) &x, prefixlen, 0, NULL, termlen, type,    col++ )
+
+#define NULL_BIND2(x, type) \
+	bcp_bind( dbproc, (unsigned char *) &x, prefixlen, 0, "", 1, type,    col++ )
 
 static void
 test_bind(DBPROCESS * dbproc)
@@ -128,29 +131,29 @@ test_bind(DBPROCESS * dbproc)
 	assert(fOK == SUCCEED); 
 
 	/* nulls */
-	fOK = NULL_BIND(not_null_char, SYBVARCHAR);
+	fOK = NULL_BIND2(not_null_char, SYBVARCHAR);
 	assert(fOK == SUCCEED); 
-	fOK = NULL_BIND(not_null_varchar, SYBVARCHAR);
-	assert(fOK == SUCCEED); 
-
-	fOK = NULL_BIND(not_null_datetime, SYBVARCHAR);
-	assert(fOK == SUCCEED); 
-	fOK = NULL_BIND(not_null_smalldatetime, SYBVARCHAR);
+	fOK = NULL_BIND2(not_null_varchar, SYBVARCHAR);
 	assert(fOK == SUCCEED); 
 
-	fOK = NULL_BIND(not_null_money, SYBVARCHAR);
+	fOK = NULL_BIND2(not_null_datetime, SYBVARCHAR);
 	assert(fOK == SUCCEED); 
-	fOK = NULL_BIND(not_null_smallmoney, SYBVARCHAR);
-	assert(fOK == SUCCEED); 
-
-	fOK = NULL_BIND(not_null_float, SYBVARCHAR);
-	assert(fOK == SUCCEED); 
-	fOK = NULL_BIND(not_null_real, SYBVARCHAR);
+	fOK = NULL_BIND2(not_null_smalldatetime, SYBVARCHAR);
 	assert(fOK == SUCCEED); 
 
-	fOK = NULL_BIND(not_null_decimal, SYBVARCHAR);
+	fOK = NULL_BIND2(not_null_money, SYBVARCHAR);
 	assert(fOK == SUCCEED); 
-	fOK = NULL_BIND(not_null_numeric, SYBVARCHAR);
+	fOK = NULL_BIND2(not_null_smallmoney, SYBVARCHAR);
+	assert(fOK == SUCCEED); 
+
+	fOK = NULL_BIND2(not_null_float, SYBVARCHAR);
+	assert(fOK == SUCCEED); 
+	fOK = NULL_BIND2(not_null_real, SYBVARCHAR);
+	assert(fOK == SUCCEED); 
+
+	fOK = NULL_BIND2(not_null_decimal, SYBVARCHAR);
+	assert(fOK == SUCCEED); 
+	fOK = NULL_BIND2(not_null_numeric, SYBVARCHAR);
 	assert(fOK == SUCCEED); 
 
 	fOK = NULL_BIND(not_null_int, SYBINT4);
@@ -209,6 +212,8 @@ TEST_MAIN()
 	}
 	printf("OK\n");
 
+//	assert(bcp_bind(dbproc, (unsigned char *) &not_null_int, 0, 10, NULL, 0, SYBINT4, 1) == SUCCEED);
+
 	test_bind(dbproc);
 
 	printf("Sending same row 10 times... \n");
@@ -220,20 +225,26 @@ TEST_MAIN()
 	}
 	
 	printf("Sending 5 more rows ... \n");
+printf("%d: trace\n", __LINE__);
 	for (i=15; i <= 27; i++) {
 		int type = dbcoltype(dbproc, i);
 		int len = (type == SYBCHAR || type == SYBVARCHAR)? dbcollen(dbproc, i) : -1;
+printf("%d: trace\n", __LINE__);
 		if (bcp_collen(dbproc, len, i) == FAIL) {
+printf("%d: trace\n", __LINE__);
 			fprintf(stderr, "bcp_collen failed for column %d\n", i);
 		        exit(1);
 		}
+printf("%d: trace\n", __LINE__);
 	}
+printf("%d: trace\n", __LINE__);
 	for (i=0; i<5; i++) {
 		if (bcp_sendrow(dbproc) == FAIL) {
 			fprintf(stderr, "send failed\n");
 		        exit(1);
 		}
 	}
+printf("%d: trace\n", __LINE__);
 #if 1
 	rows_sent = bcp_batch(dbproc);
 	if (rows_sent == -1) {
